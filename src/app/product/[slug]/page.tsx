@@ -195,7 +195,7 @@ export default async function ProductPage({ params }: PageProps) {
         <section className="mt-14">
           <h2 className="text-2xl font-bold text-ink">Product details</h2>
           <div
-            className="prose prose-sm mt-4 max-w-3xl product-description text-ink prose-headings:font-display prose-a:text-brand"
+            className="prose prose-sm mt-4 max-w-none product-description text-ink prose-headings:font-display prose-a:text-brand"
             dangerouslySetInnerHTML={{ __html: description }}
           />
         </section>
