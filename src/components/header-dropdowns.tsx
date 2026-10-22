@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { buildTaxonomy } from "@/lib/taxonomy";
+import { buildTaxonomy, categoryHref } from "@/lib/taxonomy";
 import { decodeEntities } from "@/lib/format";
 import { WP } from "@/lib/site";
 import type { StoreCategory } from "@/lib/woo";
@@ -85,7 +85,7 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
                           {group.categories.map((category) => (
                             <Link
                               key={category.id}
-                              href={`/product-category/${category.slug}`}
+                              href={categoryHref(category.slug)}
                               className="flex items-center justify-between gap-2 rounded-lg px-2 py-2 text-[15px] text-ink hover:bg-haze"
                             >
                               <span className="truncate">{decodeEntities(category.name)}</span>

@@ -6,7 +6,7 @@ import { decodeEntities } from "@/lib/format";
 import { catchyTitle } from "@/lib/catchy";
 import { buildTaxonomy } from "@/lib/taxonomy";
 import { buildBrands } from "@/lib/brands";
-import { getAllProducts, getCategories, getCategoriesWithImages, getProducts } from "@/lib/woo";
+import { getAllProducts, buildCategoryCovers, getCategories, getProducts } from "@/lib/woo";
 import { WP, WP_URL } from "@/lib/site";
 
 export const revalidate = 600;
@@ -15,13 +15,11 @@ const HERO_IMAGE =
   process.env.NEXT_PUBLIC_HERO_IMAGE ?? `${WP_URL}/wp-content/uploads/2025/01/slider-1-scaled.webp`;
 
 export default async function HomePage() {
-  const [{ products: popular, total }, { products: saleProducts }, categoryTiles, categories] =
-    await Promise.all([
-      getProducts({ perPage: 24, orderby: "popularity" }),
-      getProducts({ perPage: 12, onSale: true, orderby: "popularity" }),
-      getCategoriesWithImages(8),
-      getCategories(),
-    ]);
+  const [{ products: popular, total }, { products: saleProducts }, categories] = await Promise.all([
+    getProducts({ perPage: 24, orderby: "popularity" }),
+    getProducts({ perPage: 12, onSale: true, orderby: "popularity" }),
+    getCategories(),
+  ]);
 
   // A handful of catalogue entries are "contact for price" — keep the
   // storefront sections shoppable and let the shop page show everything.
@@ -46,6 +44,7 @@ export default async function HomePage() {
   ]);
 
   const brands = buildBrands(catalogue).slice(0, 12);
+  const covers = buildCategoryCovers(catalogue);
 
   return (
     <>
@@ -154,7 +153,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Categories */}
+      {/* Departments */}
       <section className="section">
         <div className="container-page">
           <SectionHeading
@@ -164,32 +163,35 @@ export default async function HomePage() {
             linkLabel="All categories"
           />
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {categoryTiles.map((category, index) => (
-              <Link
-                key={category.id}
-                href={`/product-category/${category.slug}`}
-                className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-line bg-white p-3 transition hover:border-ink/20 hover:shadow-[0_14px_40px_-28px_rgba(4,0,55,0.5)]"
-              >
-                <span className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-haze">
-                  {category.productImage ? (
-                    <Image
-                      src={category.productImage}
-                      alt=""
-                      fill
-                      sizes="64px"
-                      priority={index < 4}
-                      className="object-contain p-1.5 transition duration-300 group-hover:scale-105"
-                    />
-                  ) : null}
-                </span>
-                <span className="min-w-0">
-                  <span className="line-clamp-2 block text-sm font-semibold leading-snug text-ink">
-                    {decodeEntities(category.name)}
+            {departments.map((department, index) => {
+              const cover = department.anchor ? covers.get(department.anchor.id) : null;
+              return (
+                <Link
+                  key={department.key}
+                  href={department.landingHref}
+                  className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-line bg-white p-3 transition hover:border-ink/20 hover:shadow-[0_14px_40px_-28px_rgba(4,0,55,0.5)]"
+                >
+                  <span className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-haze">
+                    {cover ? (
+                      <Image
+                        src={cover.src}
+                        alt=""
+                        fill
+                        sizes="64px"
+                        priority={index < 4}
+                        className="object-contain p-1.5 transition duration-300 group-hover:scale-105"
+                      />
+                    ) : null}
                   </span>
-                  <span className="mt-0.5 block text-xs text-muted">{category.count} products</span>
-                </span>
-              </Link>
-            ))}
+                  <span className="min-w-0">
+                    <span className="line-clamp-2 block text-sm font-semibold leading-snug text-ink">
+                      {department.name}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-muted">{department.count} products</span>
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

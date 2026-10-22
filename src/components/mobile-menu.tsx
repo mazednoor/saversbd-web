@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SearchAutosuggest } from "./search-autosuggest";
 import { useMobileMenu } from "./mobile-menu-context";
-import { buildTaxonomy } from "@/lib/taxonomy";
+import { buildTaxonomy, categoryHref } from "@/lib/taxonomy";
 import { decodeEntities } from "@/lib/format";
 import { WP } from "@/lib/site";
 import type { StoreCategory } from "@/lib/woo";
@@ -159,7 +159,7 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                               {group.categories.map((category) => (
                                 <Link
                                   key={category.id}
-                                  href={`/product-category/${category.slug}`}
+                                  href={categoryHref(category.slug)}
                                   onClick={close}
                                   className="block rounded-lg px-2 py-2 text-[15px] text-muted hover:bg-haze hover:text-ink"
                                 >

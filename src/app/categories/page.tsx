@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
-import { buildTaxonomy } from "@/lib/taxonomy";
+import { buildTaxonomy, categoryHref } from "@/lib/taxonomy";
 import { decodeEntities } from "@/lib/format";
 import { buildCategoryCovers, getAllProducts, getCategories } from "@/lib/woo";
 
@@ -117,7 +117,7 @@ export default async function CategoriesPage() {
                   return (
                     <Link
                       key={category.id}
-                      href={`/product-category/${category.slug}`}
+                      href={categoryHref(category.slug)}
                       className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-[0_14px_40px_-28px_rgba(4,0,55,0.5)]"
                     >
                       <span className="relative block aspect-square overflow-hidden bg-haze">

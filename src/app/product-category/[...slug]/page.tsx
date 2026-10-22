@@ -9,7 +9,7 @@ import { SortSelect } from "@/components/sort-select";
 import { EmptyState } from "@/components/ui";
 import { absoluteUrl, decodeEntities, excerptFrom } from "@/lib/format";
 import { CATEGORY_ALIASES } from "@/lib/category-aliases";
-import { buildTaxonomy, findPlacement } from "@/lib/taxonomy";
+import { buildTaxonomy, findPlacement, categoryHref, isDepartmentCategory } from "@/lib/taxonomy";
 import { buildBrands, getBrand } from "@/lib/brands";
 import { FilterPanel, type BrandOption, type ShopFilters } from "@/components/filter-panel";
 import {
@@ -56,13 +56,19 @@ async function resolveCategory(segments: string[]) {
   // category that absorbed them.
   const alias = CATEGORY_ALIASES[slug];
   if (alias) {
-    permanentRedirect(`/product-category/${alias}`);
+    permanentRedirect(categoryHref(alias));
   }
 
   const category = await getCategoryBySlug(slug);
   if (!category) return null;
   // "Uncategorized" is a WordPress default bucket, not a shoppable department.
   if (category.slug === "uncategorized") return null;
+
+  // Only the 7 top-level departments have a landing page. Every other
+  // category opens the shop page filtered to that category.
+  if (!isDepartmentCategory(category.slug)) {
+    permanentRedirect(`/shop?category=${category.slug}`);
+  }
 
   const categories = await getCategories();
   const byId = new Map(categories.map((item) => [item.id, item]));
@@ -157,7 +163,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           .map((item) => ({
             key: item.slug,
             name: decodeEntities(item.name),
-            href: `/product-category/${item.slug}`,
+            href: categoryHref(item.slug),
             count: item.count,
             imageId: item.id,
             group: group.name,
@@ -171,7 +177,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
         .map((item) => ({
           key: item.slug,
           name: decodeEntities(item.name),
-          href: `/product-category/${item.slug}`,
+          href: categoryHref(item.slug),
           count: item.count,
           imageId: item.id,
         }));
@@ -211,7 +217,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
     Boolean,
   ).length;
 
-  const categoryHref = `/product-category/${category.slug}`;
+  const categoryPath = `/product-category/${category.slug}`;
 
   const crumbs = [
     { label: "Shop", href: "/shop" },
@@ -220,7 +226,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           { label: placement.department.name, href: placement.department.href },
           { label: placement.group.name, href: placement.group.href },
         ]
-      : chain.slice(0, -1).map((item) => ({ label: decodeEntities(item.name), href: `/product-category/${item.slug}` }))),
+      : chain.slice(0, -1).map((item) => ({ label: decodeEntities(item.name), href: categoryHref(item.slug) }))),
     { label: decodeEntities(category.name) },
   ];
 
@@ -256,7 +262,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           {siblings.map((sibling) => (
             <Link
               key={sibling.id}
-              href={`/product-category/${sibling.slug}`}
+              href={categoryHref(sibling.slug)}
               className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium hover:border-ink ${
                 sibling.slug === category.slug ? "border-ink bg-ink text-white" : "border-line"
               }`}
@@ -343,8 +349,8 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
                 filters={filters}
                 brands={brandOptions}
                 activeCount={activeCount}
-                action={categoryHref}
-                clearHref={categoryHref}
+                action={categoryPath}
+                clearHref={categoryPath}
                 showDepartment={false}
                 showGroups={false}
               />
@@ -359,8 +365,8 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
               filters={filters}
               brands={brandOptions}
               activeCount={activeCount}
-              action={categoryHref}
-              clearHref={categoryHref}
+              action={categoryPath}
+              clearHref={categoryPath}
               showDepartment={false}
               showGroups={false}
             />
@@ -378,7 +384,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
             <EmptyState
               title="Nothing matches these filters"
               message="Try a different brand or a wider price range, or browse the rest of the catalogue."
-              actionHref={categoryHref}
+              actionHref={categoryPath}
               actionLabel="Clear filters"
             />
           )}
@@ -386,7 +392,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           <Pagination
             currentPage={page}
             totalPages={result.totalPages}
-            basePath={categoryHref}
+            basePath={categoryPath}
             params={{
               brand: brandSlug || undefined,
               min: query.min,

@@ -201,6 +201,28 @@ export const DEPARTMENTS: TaxonomyDepartment[] = [
   },
 ];
 
+/**
+ * Slugs of the 7 top-level departments. These are the only categories that
+ * get a dedicated landing page — every other category opens the shop page
+ * pre-filtered to that category.
+ */
+export const DEPARTMENT_ANCHORS: string[] = DEPARTMENTS.map(
+  (department) => department.anchor,
+).filter((anchor): anchor is string => Boolean(anchor));
+
+export function isDepartmentCategory(slug: string): boolean {
+  return DEPARTMENT_ANCHORS.includes(slug);
+}
+
+/**
+ * Where a category link should point:
+ *  - the 7 departments  → their own landing page
+ *  - everything else    → the shop page filtered to that category
+ */
+export function categoryHref(slug: string): string {
+  return isDepartmentCategory(slug) ? `/product-category/${slug}` : `/shop?category=${slug}`;
+}
+
 export interface ResolvedGroup {
   name: string;
   slug: string;

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SITE, WP } from "@/lib/site";
 import { decodeEntities } from "@/lib/format";
+import { categoryHref } from "@/lib/taxonomy";
 import { getTopCategories } from "@/lib/woo";
 
 export async function SiteFooter() {
@@ -40,7 +41,7 @@ export async function SiteFooter() {
             </li>
             {categories.map((category) => (
               <li key={category.id}>
-                <Link href={`/product-category/${category.slug}`} className="hover:text-brand">
+                <Link href={categoryHref(category.slug)} className="hover:text-brand">
                   {decodeEntities(category.name)}
                 </Link>
               </li>

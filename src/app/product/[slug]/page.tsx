@@ -15,6 +15,7 @@ import {
   formatMoney,
   productPrice,
 } from "@/lib/format";
+import { categoryHref } from "@/lib/taxonomy";
 import { prepareContent } from "@/lib/html";
 import { getProductBySlug, getRelatedProducts } from "@/lib/woo";
 
@@ -86,7 +87,7 @@ export default async function ProductPage({ params }: PageProps) {
         items={[
           { label: "Shop", href: "/shop" },
           ...(primaryCategory
-            ? [{ label: decodeEntities(primaryCategory.name), href: `/product-category/${primaryCategory.slug}` }]
+            ? [{ label: decodeEntities(primaryCategory.name), href: categoryHref(primaryCategory.slug) }]
             : []),
           { label: name },
         ]}
@@ -98,7 +99,7 @@ export default async function ProductPage({ params }: PageProps) {
         <div>
           {primaryCategory ? (
             <Link
-              href={`/product-category/${primaryCategory.slug}`}
+              href={categoryHref(primaryCategory.slug)}
               className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand hover:underline"
             >
               {decodeEntities(primaryCategory.name)}
@@ -202,7 +203,7 @@ export default async function ProductPage({ params }: PageProps) {
 
       {related.length ? (
         <section className="mt-16">
-          <SectionHeading title="You may also like" href={primaryCategory ? `/product-category/${primaryCategory.slug}` : "/shop"} />
+          <SectionHeading title="You may also like" href={primaryCategory ? categoryHref(primaryCategory.slug) : "/shop"} />
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {related.map((item) => (
               <ProductCard key={item.id} product={item} />
