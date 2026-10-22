@@ -27,7 +27,7 @@ export async function SiteHeader() {
         </Link>
 
         {/* Search (desktop) */}
-        <div className="hidden flex-1 md:block md:max-w-sm">
+        <div className="hidden flex-1 md:block md:max-w-lg">
           <SearchForm />
         </div>
 
