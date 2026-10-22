@@ -44,7 +44,7 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
         <div className="absolute left-0 top-full z-50 w-64 rounded-xl border border-line bg-white p-3 shadow-xl">
           <Link
             href="/categories"
-            className="mb-1 block rounded-lg px-3 py-2 text-sm font-semibold"
+            className="mb-1 block rounded-lg px-3 py-2.5 text-[15px] font-semibold"
             style={{ color: BLUE }}
           >
             All departments →
@@ -59,7 +59,7 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
             >
               <Link
                 href={item.href}
-                className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold text-ink hover:bg-haze"
+                className="flex items-center justify-between rounded-lg px-3 py-2.5 text-[15px] font-semibold text-ink hover:bg-haze"
               >
                 <span>{item.name}</span>
                 <span className="flex items-center gap-1 text-xs text-muted">
@@ -78,7 +78,7 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
                   <div className="max-h-[70vh] w-[30rem] overflow-y-auto rounded-r-xl border-y border-r border-line bg-white p-4 shadow-[10px_0_20px_-12px_rgba(4,0,55,0.45)]">
                     {item.groups.map((group) => (
                       <div key={group.name} className="mb-4 last:mb-0">
-                        <p className="mb-1.5 px-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
+                        <p className="mb-2 px-1 text-[11px] font-bold uppercase tracking-[0.14em] text-muted">
                           {group.name}
                         </p>
                         <div className="grid grid-cols-2 gap-x-3">
@@ -86,7 +86,7 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
                             <Link
                               key={category.id}
                               href={`/product-category/${category.slug}`}
-                              className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-sm text-ink hover:bg-haze"
+                              className="flex items-center justify-between gap-2 rounded-lg px-2 py-2 text-[15px] text-ink hover:bg-haze"
                             >
                               <span className="truncate">{decodeEntities(category.name)}</span>
                               <span className="text-xs text-muted">{category.count}</span>
@@ -135,7 +135,7 @@ export function EServicesDropdown() {
             <a
               key={item.label}
               href={item.href}
-              className="block rounded-lg px-3 py-2 text-sm font-semibold text-ink hover:bg-haze"
+              className="block rounded-lg px-3 py-2.5 text-[15px] font-semibold text-ink hover:bg-haze"
             >
               {item.label}
             </a>
