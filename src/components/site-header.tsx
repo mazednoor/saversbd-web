@@ -28,7 +28,7 @@ export async function SiteHeader() {
 
         {/* Search (desktop) */}
         <div className="hidden justify-center md:flex">
-          <div className="w-full max-w-lg">
+          <div className="w-full max-w-3xl">
             <SearchForm />
           </div>
         </div>
