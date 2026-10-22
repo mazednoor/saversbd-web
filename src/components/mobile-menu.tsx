@@ -108,13 +108,6 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                   Deal of the Day
                 </Link>
                 <Link
-                  href="/blog"
-                  onClick={close}
-                  className="block rounded-xl px-3 py-3 text-sm font-semibold text-ink hover:bg-haze"
-                >
-                  Blog
-                </Link>
-                <Link
                   href="/contact"
                   onClick={close}
                   className="block rounded-xl px-3 py-3 text-sm font-semibold text-ink hover:bg-haze"

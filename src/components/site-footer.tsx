@@ -76,11 +76,6 @@ export async function SiteFooter() {
                 Checkout
               </a>
             </li>
-            <li>
-              <Link href="/blog" className="hover:text-brand">
-                Blog
-              </Link>
-            </li>
           </ul>
         </div>
 
