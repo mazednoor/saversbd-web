@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { SearchAutosuggest } from "./search-autosuggest";
 import { useMobileMenu } from "./mobile-menu-context";
 import { buildTaxonomy, categoryHref } from "@/lib/taxonomy";
 import { decodeEntities } from "@/lib/format";
@@ -75,10 +74,6 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                   <path d="m6 6 12 12M18 6 6 18" strokeLinecap="round" />
                 </svg>
               </button>
-            </div>
-
-            <div className="border-b border-line p-3">
-              <SearchAutosuggest variant="mobile" />
             </div>
 
             <nav className="flex-1 overflow-y-auto overscroll-contain p-3">

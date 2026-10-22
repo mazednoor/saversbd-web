@@ -31,7 +31,10 @@ export async function SiteHeader() {
           </Link>
         </div>
 
-        {/* Search (desktop only) */}
+        {/* Search: mobile - after logo; desktop - centered */}
+        <div className="flex-1 md:hidden min-w-0">
+          <SearchAutosuggest />
+        </div>
         <div className="hidden md:flex flex-1 justify-center">
           <div className="w-full max-w-3xl">
             <SearchAutosuggest />
@@ -53,7 +56,7 @@ export async function SiteHeader() {
           </a>
           <a
             href={WP.cart}
-            className="flex h-9 items-center gap-2 rounded-full px-3 text-[14px] font-semibold text-white transition hover:opacity-90"
+            className="hidden md:flex h-9 items-center gap-2 rounded-full px-3 text-[14px] font-semibold text-white transition hover:opacity-90"
             style={{ backgroundColor: BLUE }}
             aria-label="Go to cart on saversbd.com"
           >
