@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SearchAutosuggest } from "./search-autosuggest";
-import { getTopCategories } from "@/lib/woo";
+import { getCategories } from "@/lib/woo";
 import { decodeEntities } from "@/lib/format";
 import { CloseDetailsOnOutsideClick } from "./close-details-on-outside-click";
 import { WP } from "@/lib/site";
@@ -8,7 +8,14 @@ import { WP } from "@/lib/site";
 const BLUE = "#2060a0";
 
 export async function SiteHeader() {
-  const categories = await getTopCategories(10);
+  const allCategories = await getCategories();
+  const active = allCategories.filter((c) => c.count > 0 && c.slug !== "uncategorized");
+  const categories = active
+    .filter((c) => c.parent === 0)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+  const childrenOf = (parentId: number) =>
+    active.filter((c) => c.parent === parentId).sort((a, b) => b.count - a.count);
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white">
@@ -83,17 +90,43 @@ export async function SiteHeader() {
                   <path d="m6 9 6 6 6-6" strokeLinecap="round" />
                 </svg>
               </summary>
-              <div className="absolute left-0 top-11 z-50 w-64 rounded-xl border border-line bg-white p-2 shadow-xl">
-                {categories.map((category) => (
-                  <Link
-                    key={category.id}
-                    href={`/product-category/${category.slug}`}
-                    className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-ink hover:bg-haze"
-                  >
-                    <span>{decodeEntities(category.name)}</span>
-                    <span className="text-xs text-muted">{category.count}</span>
-                  </Link>
-                ))}
+              <div className="absolute left-0 top-11 z-50 w-72 rounded-xl border border-line bg-white p-2 shadow-xl">
+                <Link
+                  href="/shop"
+                  className="mb-1 block rounded-lg px-3 py-2 text-sm font-semibold"
+                  style={{ color: BLUE }}
+                >
+                  All products →
+                </Link>
+                <div className="my-1 h-px bg-line" />
+                {categories.map((category) => {
+                  const children = childrenOf(category.id);
+                  return (
+                    <div key={category.id}>
+                      <Link
+                        href={`/product-category/${category.slug}`}
+                        className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold text-ink hover:bg-haze"
+                      >
+                        <span>{decodeEntities(category.name)}</span>
+                        <span className="text-xs text-muted">{category.count}</span>
+                      </Link>
+                      {children.length > 0 && (
+                        <div className="ml-3 border-l border-line pl-2">
+                          {children.map((child) => (
+                            <Link
+                              key={child.id}
+                              href={`/product-category/${child.slug}`}
+                              className="flex items-center justify-between rounded-lg px-3 py-1.5 text-xs text-muted hover:bg-haze hover:text-ink"
+                            >
+                              <span>{decodeEntities(child.name)}</span>
+                              <span className="text-[10px] text-muted/70">{child.count}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
                 <Link
                   href="/categories"
                   className="mt-1 block rounded-lg px-3 py-2 text-sm font-semibold"
