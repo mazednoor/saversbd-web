@@ -12,7 +12,7 @@ import { WP, WP_URL } from "@/lib/site";
 export const revalidate = 600;
 
 const HERO_IMAGE =
-  process.env.NEXT_PUBLIC_HERO_IMAGE ?? `${WP_URL}/wp-content/uploads/2025/01/slider-1-scaled.webp`;
+  process.env.NEXT_PUBLIC_HERO_IMAGE ?? `${WP_URL}/wp-content/uploads/2025/01/slider-1.webp`;
 
 export default async function HomePage() {
   const [{ products: popular, total }, { products: saleProducts }, categories] = await Promise.all([
@@ -108,6 +108,7 @@ export default async function HomePage() {
                 alt="SaversBD featured collection"
                 fill
                 priority
+                quality={90}
                 sizes="(max-width: 1024px) 100vw, 46vw"
                 className="object-cover"
               />
