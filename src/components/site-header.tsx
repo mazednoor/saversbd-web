@@ -23,7 +23,7 @@ export async function SiteHeader() {
           <MobileMenu categories={active} />
           <Link
             href="/"
-            className="font-display text-xl font-bold tracking-tight md:text-2xl"
+            className="font-display text-[20px] font-bold tracking-tight md:text-[24px]"
             style={{ color: BLUE }}
             aria-label="SaversBD home"
           >
@@ -53,7 +53,7 @@ export async function SiteHeader() {
           </a>
           <a
             href={WP.cart}
-            className="flex h-9 items-center gap-2 rounded-full px-3 text-sm font-semibold text-white transition hover:opacity-90"
+            className="flex h-9 items-center gap-2 rounded-full px-3 text-[14px] font-semibold text-white transition hover:opacity-90"
             style={{ backgroundColor: BLUE }}
             aria-label="Go to cart on saversbd.com"
           >
@@ -81,7 +81,7 @@ export async function SiteHeader() {
 
             <Link
               href="/shop?on_sale=1"
-              className="flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium text-ink hover:bg-white"
+              className="flex items-center gap-1.5 rounded px-3 py-2 text-[14px] font-medium text-ink hover:bg-white"
             >
               <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke={BLUE} strokeWidth="2">
                 <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" strokeLinecap="round" />

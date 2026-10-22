@@ -111,7 +111,7 @@ export default async function ProductPage({ params }: PageProps) {
           {product.sku ? <p className="mt-2 text-xs text-muted">SKU: {product.sku}</p> : null}
 
           <div className="mt-5 flex flex-wrap items-end gap-3">
-            <span className="text-3xl font-bold text-ink">{price}</span>
+            <span className="text-[30px] font-bold leading-none text-ink">{price}</span>
             {discount ? (
               <>
                 <span className="text-base text-muted line-through">

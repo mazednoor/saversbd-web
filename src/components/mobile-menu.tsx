@@ -85,14 +85,14 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                 <Link
                   href="/shop"
                   onClick={close}
-                  className="block rounded-xl px-3 py-3 text-sm font-semibold text-ink hover:bg-haze"
+                  className="block rounded-xl px-3 py-3 text-[14px] font-semibold text-ink hover:bg-haze"
                 >
                   All products
                 </Link>
                 <Link
                   href="/shop?on_sale=1"
                   onClick={close}
-                  className="flex items-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold text-ink hover:bg-haze"
+                  className="flex items-center gap-2 rounded-xl px-3 py-3 text-[14px] font-semibold text-ink hover:bg-haze"
                 >
                   <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke={BLUE} strokeWidth="2">
                     <path
@@ -105,7 +105,7 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                 <Link
                   href="/contact"
                   onClick={close}
-                  className="block rounded-xl px-3 py-3 text-sm font-semibold text-ink hover:bg-haze"
+                  className="block rounded-xl px-3 py-3 text-[14px] font-semibold text-ink hover:bg-haze"
                 >
                   Contact
                 </Link>
@@ -113,7 +113,7 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
 
               <div className="my-3 h-px bg-line" />
 
-              <p className="px-3 pb-1 text-[13px] font-bold uppercase tracking-[0.14em] text-muted">
+              <p className="px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
                 Departments
               </p>
 
@@ -126,7 +126,7 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                         <Link
                           href={department.href}
                           onClick={close}
-                          className="min-w-0 flex-1 rounded-xl px-3 py-2.5 text-[16px] font-semibold text-ink hover:bg-haze"
+                          className="min-w-0 flex-1 rounded-xl px-3 py-2.5 text-[15px] font-semibold text-ink hover:bg-haze"
                         >
                           {department.name}
                         </Link>
@@ -153,7 +153,7 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                         <div className="mb-2 ml-2 border-l border-line pl-3">
                           {department.groups.map((group) => (
                             <div key={group.name} className="mb-2 last:mb-0">
-                              <p className="px-2 pb-0.5 text-[13px] font-bold uppercase tracking-[0.14em] text-muted">
+                              <p className="px-2 pb-0.5 text-[11px] font-bold uppercase tracking-[0.14em] text-muted">
                                 {group.name}
                               </p>
                               {group.categories.map((category) => (
@@ -161,7 +161,7 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                                   key={category.id}
                                   href={categoryHref(category.slug)}
                                   onClick={close}
-                                  className="block rounded-lg px-2 py-2 text-[16px] text-muted hover:bg-haze hover:text-ink"
+                                  className="block rounded-lg px-2 py-2 text-[15px] text-muted hover:bg-haze hover:text-ink"
                                 >
                                   {decodeEntities(category.name)}
                                 </Link>
@@ -177,7 +177,7 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                 <Link
                   href="/categories"
                   onClick={close}
-                  className="mt-1 block rounded-xl px-3 py-2.5 text-[16px] font-semibold"
+                  className="mt-1 block rounded-xl px-3 py-2.5 text-[15px] font-semibold"
                   style={{ color: BLUE }}
                 >
                   All departments →
@@ -189,7 +189,7 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
               <div className="grid grid-cols-2 gap-2">
                 <a
                   href={WP.account}
-                  className="flex items-center justify-center gap-2 rounded-xl border border-line py-2.5 text-sm font-semibold text-ink"
+                  className="flex items-center justify-center gap-2 rounded-xl border border-line py-2.5 text-[14px] font-semibold text-ink"
                 >
                   <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.7">
                     <circle cx="12" cy="8" r="3.6" />
@@ -199,7 +199,7 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                 </a>
                 <a
                   href={WP.cart}
-                  className="flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold text-white"
+                  className="flex items-center justify-center gap-2 rounded-xl py-2.5 text-[14px] font-semibold text-white"
                   style={{ backgroundColor: BLUE }}
                 >
                   <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">

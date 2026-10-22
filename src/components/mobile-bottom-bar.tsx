@@ -92,7 +92,7 @@ export function MobileBottomBar() {
                 {item.icon}
               </span>
               <span
-                className="text-[13px] font-medium leading-none"
+                className="text-[10px] font-medium leading-none"
                 style={{ color: isActive ? BLUE : undefined }}
               >
                 {item.label}

@@ -144,7 +144,7 @@ export function SearchAutosuggest({ variant = "desktop" }: { variant?: "desktop"
           onKeyDown={onKeyDown}
           placeholder="Search diapers, skincare, toys…"
           autoComplete="off"
-          className="h-11 w-full rounded-full border border-line bg-haze pl-11 pr-32 text-sm text-ink placeholder:text-muted/80 focus:border-brand focus:bg-white focus:outline-none"
+          className="h-11 w-full rounded-full border border-line bg-haze pl-11 pr-32 text-[14px] text-ink placeholder:text-muted/80 focus:border-brand focus:bg-white focus:outline-none"
         />
         <svg
           aria-hidden="true"
@@ -159,7 +159,7 @@ export function SearchAutosuggest({ variant = "desktop" }: { variant?: "desktop"
         </svg>
         <button
           type="submit"
-          className="absolute right-1.5 top-1.5 h-8 rounded-full bg-brand px-8 text-xs font-semibold text-white hover:bg-brand-dark"
+          className="absolute right-1.5 top-1.5 h-8 rounded-full bg-brand px-8 text-[11px] font-semibold text-white hover:bg-brand-dark"
         >
           Search
         </button>
