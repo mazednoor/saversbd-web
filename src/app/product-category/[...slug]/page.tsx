@@ -196,6 +196,14 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
               ? `${subcategories.length} subcategories · ${result.total.toLocaleString("en-US")} products`
               : `${result.total.toLocaleString("en-US")} ${result.total === 1 ? "product" : "products"}`}
           </p>
+          {showTiles ? (
+            <Link
+              href={`/shop?category=${category.slug}`}
+              className="mt-2 inline-block text-sm font-semibold text-brand hover:underline"
+            >
+              View all {result.total.toLocaleString("en-US")} products →
+            </Link>
+          ) : null}
         </div>
         {showTiles ? null : <SortSelect value={query.orderby ?? "date-desc"} />}
       </header>
