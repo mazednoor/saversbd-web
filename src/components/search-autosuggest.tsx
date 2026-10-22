@@ -159,7 +159,11 @@ export function SearchAutosuggest({ variant = "desktop" }: { variant?: "desktop"
         </svg>
         <button
           type="submit"
-          className="absolute right-1.5 top-1.5 h-8 rounded-full bg-brand px-8 text-[14px] font-semibold text-white cursor-pointer hover:bg-brand-dark"
+          className={`absolute right-1.5 top-1.5 rounded-full bg-brand font-semibold text-white cursor-pointer hover:bg-brand-dark ${
+            variant === "mobile"
+              ? "h-7 px-4 text-[12px]"
+              : "h-8 px-8 text-[14px]"
+          }`}
         >
           Search
         </button>

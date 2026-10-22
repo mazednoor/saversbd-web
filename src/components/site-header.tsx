@@ -33,7 +33,7 @@ export async function SiteHeader() {
 
         {/* Search: mobile - after logo; desktop - centered */}
         <div className="flex-1 md:hidden min-w-0">
-          <SearchAutosuggest />
+          <SearchAutosuggest variant="mobile" />
         </div>
         <div className="hidden md:flex flex-1 justify-center">
           <div className="w-full max-w-3xl">
