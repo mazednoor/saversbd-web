@@ -95,7 +95,7 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
                         <Link
                           key={child.id}
                           href={`/product-category/${child.slug}`}
-                          className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-ink hover:bg-haze"
+                          className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold text-ink hover:bg-haze"
                         >
                           <span>{decodeEntities(child.name)}</span>
                           <span className="text-xs text-muted">{child.count}</span>
@@ -152,7 +152,7 @@ export function EServicesDropdown({}: EServicesDropdownProps) {
             <a
               key={item.label}
               href={item.href}
-              className="block rounded-lg px-3 py-2 text-sm text-ink hover:bg-haze"
+              className="block rounded-lg px-3 py-2 text-sm font-semibold text-ink hover:bg-haze"
             >
               {item.label}
             </a>
