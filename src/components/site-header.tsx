@@ -80,7 +80,7 @@ export async function SiteHeader() {
         <div className="container-page flex flex-wrap items-center gap-1 py-1">
           <nav aria-label="Primary" className="flex items-center gap-1">
             {/* All Categories dropdown */}
-            <details className="group relative">
+            <details className="group hover-dropdown relative">
               <summary
                 className="flex cursor-pointer list-none items-center gap-1.5 rounded px-3 py-2 text-sm font-semibold text-white [&::-webkit-details-marker]:hidden"
                 style={{ backgroundColor: BLUE }}
@@ -90,7 +90,7 @@ export async function SiteHeader() {
                   <path d="m6 9 6 6 6-6" strokeLinecap="round" />
                 </svg>
               </summary>
-              <div className="absolute left-0 top-11 z-50 w-72 rounded-xl border border-line bg-white p-2 shadow-xl">
+              <div className="dropdown-panel absolute left-0 top-11 z-50 w-72 rounded-xl border border-line bg-white p-2 shadow-xl">
                 <Link
                   href="/shop"
                   className="mb-1 block rounded-lg px-3 py-2 text-sm font-semibold"
@@ -102,24 +102,31 @@ export async function SiteHeader() {
                 {categories.map((category) => {
                   const children = childrenOf(category.id);
                   return (
-                    <div key={category.id}>
+                    <div key={category.id} className="group/sub relative">
                       <Link
                         href={`/product-category/${category.slug}`}
                         className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold text-ink hover:bg-haze"
                       >
                         <span>{decodeEntities(category.name)}</span>
-                        <span className="text-xs text-muted">{category.count}</span>
+                        <span className="flex items-center gap-1 text-xs text-muted">
+                          {category.count}
+                          {children.length > 0 && (
+                            <svg viewBox="0 0 24 24" className="size-3" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="m9 6 6 6-6 6" strokeLinecap="round" />
+                            </svg>
+                          )}
+                        </span>
                       </Link>
                       {children.length > 0 && (
-                        <div className="ml-3 border-l border-line pl-2">
+                        <div className="absolute left-full top-0 z-50 hidden w-56 rounded-xl border border-line bg-white p-2 shadow-xl group-hover/sub:block">
                           {children.map((child) => (
                             <Link
                               key={child.id}
                               href={`/product-category/${child.slug}`}
-                              className="flex items-center justify-between rounded-lg px-3 py-1.5 text-xs text-muted hover:bg-haze hover:text-ink"
+                              className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-ink hover:bg-haze"
                             >
                               <span>{decodeEntities(child.name)}</span>
-                              <span className="text-[10px] text-muted/70">{child.count}</span>
+                              <span className="text-xs text-muted">{child.count}</span>
                             </Link>
                           ))}
                         </div>
@@ -138,14 +145,14 @@ export async function SiteHeader() {
             </details>
 
             {/* E-Services dropdown */}
-            <details className="group relative">
+            <details className="group hover-dropdown relative">
               <summary className="flex cursor-pointer list-none items-center gap-1 rounded px-3 py-2 text-sm font-medium text-ink hover:bg-white [&::-webkit-details-marker]:hidden">
                 E-Services
                 <svg viewBox="0 0 24 24" className="size-3.5 text-muted" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="m6 9 6 6 6-6" strokeLinecap="round" />
                 </svg>
               </summary>
-              <div className="absolute left-0 top-11 z-50 w-56 rounded-xl border border-line bg-white p-2 shadow-xl">
+              <div className="dropdown-panel absolute left-0 top-11 z-50 w-56 rounded-xl border border-line bg-white p-2 shadow-xl">
                 {[
                   { label: "FAQ", href: "/faq" },
                   { label: "Contact us", href: "/contact" },

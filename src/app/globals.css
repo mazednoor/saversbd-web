@@ -215,6 +215,16 @@
   max-width: 100%;
 }
 
+/* Hover-activated dropdowns used in the header. */
+details.hover-dropdown > .dropdown-panel {
+  display: none;
+}
+
+details.hover-dropdown:hover > .dropdown-panel,
+details.hover-dropdown[open] > .dropdown-panel {
+  display: block;
+}
+
 /* Product descriptions include <br> separated spec lists. */
 .product-description table {
   width: 100%;
