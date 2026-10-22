@@ -131,20 +131,63 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   // Where this category sits in the curated department taxonomy.
   const taxonomy = buildTaxonomy(allCategories);
   const placement = findPlacement(taxonomy, category.slug);
+  const department = taxonomy.find((item) => item.anchor?.slug === category.slug) ?? null;
   const siblings = placement
     ? placement.group.categories.filter((item) => item.slug !== category.slug)
     : children;
 
-  // Subcategories shown as image tiles: the WordPress children of this
-  // category, or — when it has none — its siblings in the same group.
+  // The shelf shown on the page:
+  //  - a department page lists every category inside it, grouped by shelf
+  //  - a category page lists its own children plus its shelf siblings
   const covers = buildCategoryCovers(catalogue);
-  const subcategories = (children.length ? children : siblings)
-    .filter((item) => item.count > 0)
-    .sort((a, b) => b.count - a.count);
 
-  // A category that has subcategories is a landing page: it shows the
-  // subcategory shelf, not a duplicate product list.
-  const showTiles = subcategories.length > 0;
+  interface ShelfItem {
+    key: string;
+    name: string;
+    href: string;
+    count: number;
+    imageId: number;
+    group?: string;
+  }
+
+  const shelf: ShelfItem[] = department
+    ? department.groups.flatMap((group) =>
+        group.categories
+          .filter((item) => item.count > 0)
+          .map((item) => ({
+            key: item.slug,
+            name: decodeEntities(item.name),
+            href: `/product-category/${item.slug}`,
+            count: item.count,
+            imageId: item.id,
+            group: group.name,
+          })),
+      )
+    : Array.from(
+        new Map([...children, ...siblings].map((item) => [item.id, item])).values(),
+      )
+        .filter((item) => item.count > 0)
+        .sort((a, b) => b.count - a.count)
+        .map((item) => ({
+          key: item.slug,
+          name: decodeEntities(item.name),
+          href: `/product-category/${item.slug}`,
+          count: item.count,
+          imageId: item.id,
+        }));
+
+  const shelfGroups = department
+    ? department.groups
+        .map((group) => ({
+          name: group.name,
+          items: shelf.filter((item) => item.group === group.name),
+        }))
+        .filter((group) => group.items.length > 0)
+    : [];
+
+  // A category that has a shelf is a landing page: it shows the
+  // subcategory tiles, not a duplicate product list.
+  const showTiles = shelf.length > 0;
 
   const brandOptions: BrandOption[] = buildBrands(catalogue).map((item) => ({
     slug: item.slug,
@@ -193,7 +236,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           </p>
           <p className="mt-1 text-xs uppercase tracking-wide text-muted/80">
             {showTiles
-              ? `${subcategories.length} subcategories · ${result.total.toLocaleString("en-US")} products`
+              ? `${shelf.length} subcategories · ${result.total.toLocaleString("en-US")} products`
               : `${result.total.toLocaleString("en-US")} ${result.total === 1 ? "product" : "products"}`}
           </p>
           {showTiles ? (
@@ -226,45 +269,55 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
       ) : null}
 
       {/* Subcategories with images */}
-      {subcategories.length ? (
-        <section className="mt-8">
-          <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-muted">
-            Shop by subcategory
-          </h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-            {subcategories.map((subcategory) => {
-              const cover = covers.get(subcategory.id);
-              return (
-                <Link
-                  key={subcategory.id}
-                  href={`/product-category/${subcategory.slug}`}
-                  className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-[0_14px_40px_-28px_rgba(4,0,55,0.5)]"
-                >
-                  <span className="relative block aspect-square overflow-hidden bg-haze">
-                    {cover ? (
-                      <Image
-                        src={cover.src}
-                        alt={decodeEntities(subcategory.name)}
-                        fill
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
-                        className="object-contain p-4 transition duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <span className="grid h-full place-items-center text-[10px] text-muted">No image</span>
-                    )}
-                  </span>
-                  <span className="flex flex-1 flex-col gap-0.5 p-3">
-                    <span className="line-clamp-2 text-sm font-semibold leading-snug text-ink">
-                      {decodeEntities(subcategory.name)}
-                    </span>
-                    <span className="mt-auto pt-1 text-[11px] text-muted">
-                      {subcategory.count} products
-                    </span>
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
+      {showTiles ? (
+        <section className="mt-8 space-y-8">
+          {(shelfGroups.length ? shelfGroups : [{ name: "", items: shelf }]).map((group) => (
+            <div key={group.name || "all"}>
+              {group.name ? (
+                <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-muted">
+                  {group.name}
+                </h2>
+              ) : (
+                <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-muted">
+                  Shop by subcategory
+                </h2>
+              )}
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+                {group.items.map((item) => {
+                  const cover = covers.get(item.imageId);
+                  return (
+                    <Link
+                      key={item.key}
+                      href={item.href}
+                      className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-[0_14px_40px_-28px_rgba(4,0,55,0.5)]"
+                    >
+                      <span className="relative block aspect-square overflow-hidden bg-haze">
+                        {cover ? (
+                          <Image
+                            src={cover.src}
+                            alt={item.name}
+                            fill
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
+                            className="object-contain p-4 transition duration-300 group-hover:scale-105"
+                          />
+                        ) : (
+                          <span className="grid h-full place-items-center text-[10px] text-muted">No image</span>
+                        )}
+                      </span>
+                      <span className="flex flex-1 flex-col gap-0.5 p-3">
+                        <span className="line-clamp-2 text-sm font-semibold leading-snug text-ink">
+                          {item.name}
+                        </span>
+                        <span className="mt-auto pt-1 text-[11px] text-muted">
+                          {item.count} products
+                        </span>
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </section>
       ) : null}
 
