@@ -48,7 +48,7 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 w-72 rounded-xl border border-line bg-white p-2 shadow-xl">
+        <div className="absolute left-0 top-full z-50 w-72 rounded-xl border border-line bg-white p-3 shadow-xl">
           <Link
             href="/shop"
             className="mb-1 block rounded-lg px-3 py-2 text-sm font-semibold"
@@ -81,7 +81,7 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
                   </span>
                 </Link>
                 {children.length > 0 && flyout === category.id && (
-                  <div className="absolute left-full top-0 z-50 w-56 rounded-xl border border-line bg-white p-2 shadow-xl">
+                  <div className="absolute left-full top-0 z-50 w-56 rounded-xl border border-line bg-white p-3 shadow-xl">
                     {children.map((child) => (
                       <Link
                         key={child.id}
@@ -131,7 +131,7 @@ export function EServicesDropdown({}: EServicesDropdownProps) {
         </svg>
       </button>
       {open && (
-        <div className="absolute left-0 top-full z-50 w-56 rounded-xl border border-line bg-white p-2 shadow-xl">
+        <div className="absolute left-0 top-full z-50 w-56 rounded-xl border border-line bg-white p-3 shadow-xl">
           {[
             { label: "FAQ", href: "/faq" },
             { label: "Contact us", href: "/contact" },

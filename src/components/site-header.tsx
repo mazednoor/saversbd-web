@@ -21,11 +21,8 @@ export async function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white">
       <CloseDetailsOnOutsideClick />
-      {/* Blue accent line (matches the reference header) */}
-      <div className="h-1.5" style={{ backgroundColor: BLUE }} />
-
       {/* Main bar */}
-      <div className="container-page grid h-12 grid-cols-[auto_1fr_auto] items-center gap-3 md:h-14">
+      <div className="container-page grid h-14 grid-cols-[auto_1fr_auto] items-center gap-4 md:h-16">
         {/* Logo */}
         <Link
           href="/"
@@ -78,7 +75,7 @@ export async function SiteHeader() {
 
       {/* Menu row (on its own line) */}
       <div className="bg-haze/60">
-        <div className="container-page flex flex-wrap items-center gap-1 py-1">
+        <div className="container-page flex flex-wrap items-center gap-2 py-2">
           <nav aria-label="Primary" className="flex items-center gap-1">
             <AllCategoriesDropdown categories={active} />
 
