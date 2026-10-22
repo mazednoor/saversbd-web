@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
 import { SectionHeading } from "@/components/ui";
 import { decodeEntities } from "@/lib/format";
+import { catchyTitle } from "@/lib/catchy";
 import { getCategories, getCategoriesWithImages, getProducts, getTopCategories } from "@/lib/woo";
 import { WP, WP_URL } from "@/lib/site";
 
@@ -219,7 +220,7 @@ export default async function HomePage() {
             <section key={category.id} className={`section ${index % 2 === 0 ? "bg-haze" : ""}`}>
               <div className="container-page">
                 <SectionHeading
-                  title={decodeEntities(category.name)}
+                  title={catchyTitle(category.name, category.slug)}
                   href={`/product-category/${category.slug}`}
                   linkLabel={`View all ${category.count} products`}
                 />
