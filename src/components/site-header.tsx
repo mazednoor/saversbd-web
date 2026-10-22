@@ -80,6 +80,17 @@ export async function SiteHeader() {
             <EServicesDropdown />
 
             <Link
+              href="/brands"
+              className="flex items-center gap-1.5 rounded px-3 py-2 text-[14px] font-medium text-ink hover:bg-white"
+            >
+              <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M8 12h8M12 8v8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              All Brands
+            </Link>
+
+            <Link
               href="/shop?on_sale=1"
               className="flex items-center gap-1.5 rounded px-3 py-2 text-[14px] font-medium text-ink hover:bg-white"
             >
