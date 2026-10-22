@@ -66,7 +66,7 @@ export async function SiteHeader() {
 
       {/* Menu row (on its own line) */}
       <div className="border-t border-line bg-haze/60">
-        <div className="container-page flex items-center gap-1 overflow-x-auto py-1">
+        <div className="container-page flex flex-wrap items-center gap-1 py-1">
           <nav aria-label="Primary" className="flex items-center gap-1">
             {/* All Categories dropdown */}
             <details className="group relative">
