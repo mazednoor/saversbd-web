@@ -14,6 +14,7 @@ const BLUE = "#2060a0";
 export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
   const { open, setOpen } = useMobileMenu();
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [selectedDept, setSelectedDept] = useState<string | null>(null);
 
   const close = () => setOpen(false);
   const departments = buildTaxonomy(categories);
@@ -81,13 +82,21 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
             </div>
 
             <nav className="flex-1 overflow-y-auto overscroll-contain p-3">
-              {/* All Categories - expandable with departments */}
+              {/* All Categories - two-level drill down */}
               <div className="space-y-0.5">
                 <div>
                   <button
                     type="button"
-                    onClick={() => setExpanded(expanded === "all-categories" ? null : "all-categories")}
-                    aria-label="Show all categories"
+                    onClick={() => {
+                      if (expanded === "all-categories") {
+                        setExpanded(null);
+                        setSelectedDept(null);
+                      } else {
+                        setExpanded("all-categories");
+                        setSelectedDept(null);
+                      }
+                    }}
+                    aria-label={expanded === "all-categories" ? "Close categories" : "Show all categories"}
                     aria-expanded={expanded === "all-categories"}
                     className="w-full flex items-center justify-between rounded-xl px-3 py-3 text-[14px] font-semibold text-ink hover:bg-haze"
                   >
@@ -103,37 +112,20 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                     </svg>
                   </button>
 
-                  {expanded === "all-categories" && (
-                    <div className="mt-1 ml-2 border-l border-line pl-3 space-y-2">
+                  {expanded === "all-categories" && !selectedDept && (
+                    <div className="mt-1 ml-2 border-l border-line pl-3 space-y-1">
                       {departments.map((department) => (
-                        <div key={department.key}>
-                          <Link
-                            href={department.href}
-                            onClick={close}
-                            className="block rounded-lg px-2 py-1.5 text-[14px] font-semibold text-ink hover:bg-haze"
-                          >
-                            {department.name}
-                          </Link>
-                          <div className="ml-2 mt-1 space-y-1">
-                            {department.groups.map((group) => (
-                              <div key={group.name}>
-                                <p className="px-1 pb-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
-                                  {group.name}
-                                </p>
-                                {group.categories.map((category) => (
-                                  <Link
-                                    key={category.id}
-                                    href={categoryHref(category.slug)}
-                                    onClick={close}
-                                    className="block rounded-lg px-2 py-1.5 text-[14px] text-muted hover:bg-haze hover:text-ink"
-                                  >
-                                    {decodeEntities(category.name)}
-                                  </Link>
-                                ))}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
+                        <button
+                          key={department.key}
+                          type="button"
+                          onClick={() => setSelectedDept(department.key)}
+                          className="w-full flex items-center justify-between rounded-lg px-2 py-2 text-[14px] font-semibold text-ink hover:bg-haze"
+                        >
+                          <span>{department.name}</span>
+                          <svg viewBox="0 0 24 24" className="size-4 text-muted" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="m9 6 6 6-6 6" strokeLinecap="round" />
+                          </svg>
+                        </button>
                       ))}
                       <Link
                         href="/categories"
@@ -143,6 +135,53 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                       >
                         All departments →
                       </Link>
+                    </div>
+                  )}
+
+                  {selectedDept && (
+                    <div className="mt-1 ml-2 border-l border-line pl-3 space-y-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedDept(null)}
+                        className="w-full flex items-center gap-2 rounded-lg px-2 py-2 text-[14px] font-semibold text-brand hover:bg-brand-soft"
+                      >
+                        <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="m15 18-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        <span>Back</span>
+                      </button>
+                      {departments.map((department) => (
+                        department.key === selectedDept && (
+                          <div key={department.key}>
+                            <Link
+                              href={department.href}
+                              onClick={close}
+                              className="block rounded-lg px-2 py-1.5 text-[14px] font-semibold text-ink hover:bg-haze"
+                            >
+                              {department.name}
+                            </Link>
+                            <div className="ml-2 mt-1 space-y-1">
+                              {department.groups.map((group) => (
+                                <div key={group.name}>
+                                  <p className="px-1 pb-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
+                                    {group.name}
+                                  </p>
+                                  {group.categories.map((category) => (
+                                    <Link
+                                      key={category.id}
+                                      href={categoryHref(category.slug)}
+                                      onClick={close}
+                                      className="block rounded-lg px-2 py-1.5 text-[14px] text-muted hover:bg-haze hover:text-ink"
+                                    >
+                                      {decodeEntities(category.name)}
+                                    </Link>
+                                  ))}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      ))}
                     </div>
                   )}
                 </div>
