@@ -85,8 +85,12 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
                      pointer "inside" the row, so the flyout does not close
                      while the cursor travels across the gap — and it does
                      not overlap the parent panel. */
-                  <div className="absolute left-full top-0 z-50 pl-3">
-                    <div className="w-56 rounded-xl border border-line bg-white p-3 shadow-xl">
+                  /* The wrapper's transparent padding bridges the gap so the
+                     flyout stays open while the cursor travels across it, and
+                     the panel itself has no left border/rounded corner, so it
+                     reads as one continuous panel with the category list. */
+                  <div className="absolute left-full top-0 z-50 pl-[11px]">
+                    <div className="w-56 rounded-r-xl border-y border-r border-line bg-white p-3 shadow-[10px_0_20px_-12px_rgba(4,0,55,0.45)]">
                       {children.map((child) => (
                         <Link
                           key={child.id}
