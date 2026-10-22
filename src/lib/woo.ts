@@ -70,6 +70,7 @@ export interface ProductQuery {
   orderby?: "date" | "modified" | "id" | "title" | "slug" | "price" | "popularity" | "rating" | "menu_order";
   order?: "asc" | "desc";
   onSale?: boolean;
+  inStock?: boolean;
   exclude?: number[];
   include?: number[];
   minPrice?: number;
@@ -108,6 +109,7 @@ function buildProductQuery(q: ProductQuery): string {
   if (q.orderby) params.set("orderby", q.orderby);
   if (q.order) params.set("order", q.order);
   if (q.onSale) params.set("on_sale", "true");
+  if (q.inStock) params.set("stock_status", "instock");
   if (q.exclude?.length) params.set("exclude", q.exclude.join(","));
   if (q.include?.length) params.set("include", q.include.join(","));
   if (q.minPrice != null) params.set("min_price", String(q.minPrice));

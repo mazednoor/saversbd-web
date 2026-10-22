@@ -1,4 +1,5 @@
 import type { StoreCategory } from "./woo";
+import { slugify } from "./format";
 
 /**
  * Curated storefront taxonomy.
@@ -202,6 +203,7 @@ export const DEPARTMENTS: TaxonomyDepartment[] = [
 
 export interface ResolvedGroup {
   name: string;
+  slug: string;
   count: number;
   href: string;
   categoryIds: number[];
@@ -244,6 +246,7 @@ export function buildTaxonomy(categories: StoreCategory[]): ResolvedDepartment[]
           .filter((category): category is StoreCategory => Boolean(category));
         return {
           name: group.name,
+          slug: slugify(group.name),
           count: sumCounts(resolved),
           href: shopHref(resolved),
           categoryIds: resolved.map((category) => category.id),
