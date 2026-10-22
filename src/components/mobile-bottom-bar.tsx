@@ -20,30 +20,6 @@ export function MobileBottomBar() {
 
   const items: BarItem[] = [
     {
-      label: "Home",
-      href: "/",
-      icon: (
-        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.7">
-          <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" strokeLinejoin="round" />
-        </svg>
-      ),
-    },
-    {
-      label: "Shop",
-      href: "/shop",
-      icon: (
-        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.7">
-          <path
-            d="M4 5h2l2.2 10.2a2 2 0 0 0 2 1.6h6.9a2 2 0 0 0 2-1.5L21 8H7"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <circle cx="10" cy="20" r="1.3" />
-          <circle cx="18" cy="20" r="1.3" />
-        </svg>
-      ),
-    },
-    {
       label: "Categories",
       href: "/categories",
       icon: (
@@ -59,6 +35,30 @@ export function MobileBottomBar() {
         <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.7">
           <circle cx="11" cy="11" r="7" />
           <path d="m20 20-3.5-3.5" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+    {
+      label: "Home",
+      href: "/",
+      icon: (
+        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.7">
+          <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" strokeLinejoin="round" />
+        </svg>
+      ),
+    },
+    {
+      label: "Cart",
+      href: WP.cart,
+      icon: (
+        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.7">
+          <path
+            d="M4 5h2l2.2 10.2a2 2 0 0 0 2 1.6h6.9a2 2 0 0 0 2-1.5L21 8H7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="10" cy="20" r="1.3" />
+          <circle cx="18" cy="20" r="1.3" />
         </svg>
       ),
     },
