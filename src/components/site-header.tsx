@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SearchAutosuggest } from "./search-autosuggest";
 import { getCategories } from "@/lib/woo";
+import { AllCategoriesDropdown, EServicesDropdown } from "./header-dropdowns";
 import { decodeEntities } from "@/lib/format";
 import { CloseDetailsOnOutsideClick } from "./close-details-on-outside-click";
 import { WP } from "@/lib/site";
@@ -79,97 +80,9 @@ export async function SiteHeader() {
       <div className="border-t border-line bg-haze/60">
         <div className="container-page flex flex-wrap items-center gap-1 py-1">
           <nav aria-label="Primary" className="flex items-center gap-1">
-            {/* All Categories dropdown */}
-            <details className="group hover-dropdown relative">
-              <summary
-                className="flex cursor-pointer list-none items-center gap-1.5 rounded px-3 py-2 text-sm font-semibold text-white [&::-webkit-details-marker]:hidden"
-                style={{ backgroundColor: BLUE }}
-              >
-                All Categories
-                <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.4">
-                  <path d="m6 9 6 6 6-6" strokeLinecap="round" />
-                </svg>
-              </summary>
-              <div className="dropdown-panel absolute left-0 top-11 z-50 w-72 rounded-xl border border-line bg-white p-2 shadow-xl">
-                <Link
-                  href="/shop"
-                  className="mb-1 block rounded-lg px-3 py-2 text-sm font-semibold"
-                  style={{ color: BLUE }}
-                >
-                  All products →
-                </Link>
-                <div className="my-1 h-px bg-line" />
-                {categories.map((category) => {
-                  const children = childrenOf(category.id);
-                  return (
-                    <div key={category.id} className="group/sub relative">
-                      <Link
-                        href={`/product-category/${category.slug}`}
-                        className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold text-ink hover:bg-haze"
-                      >
-                        <span>{decodeEntities(category.name)}</span>
-                        <span className="flex items-center gap-1 text-xs text-muted">
-                          {category.count}
-                          {children.length > 0 && (
-                            <svg viewBox="0 0 24 24" className="size-3" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="m9 6 6 6-6 6" strokeLinecap="round" />
-                            </svg>
-                          )}
-                        </span>
-                      </Link>
-                      {children.length > 0 && (
-                        <div className="absolute left-full top-0 z-50 hidden w-56 rounded-xl border border-line bg-white p-2 shadow-xl group-hover/sub:block">
-                          {children.map((child) => (
-                            <Link
-                              key={child.id}
-                              href={`/product-category/${child.slug}`}
-                              className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-ink hover:bg-haze"
-                            >
-                              <span>{decodeEntities(child.name)}</span>
-                              <span className="text-xs text-muted">{child.count}</span>
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-                <Link
-                  href="/categories"
-                  className="mt-1 block rounded-lg px-3 py-2 text-sm font-semibold"
-                  style={{ color: BLUE }}
-                >
-                  All departments →
-                </Link>
-              </div>
-            </details>
+            <AllCategoriesDropdown categories={active} />
 
-            {/* E-Services dropdown */}
-            <details className="group hover-dropdown relative">
-              <summary className="flex cursor-pointer list-none items-center gap-1 rounded px-3 py-2 text-sm font-medium text-ink hover:bg-white [&::-webkit-details-marker]:hidden">
-                E-Services
-                <svg viewBox="0 0 24 24" className="size-3.5 text-muted" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="m6 9 6 6 6-6" strokeLinecap="round" />
-                </svg>
-              </summary>
-              <div className="dropdown-panel absolute left-0 top-11 z-50 w-56 rounded-xl border border-line bg-white p-2 shadow-xl">
-                {[
-                  { label: "FAQ", href: "/faq" },
-                  { label: "Contact us", href: "/contact" },
-                  { label: "Delivery info", href: "/faq" },
-                  { label: "Returns", href: "/contact" },
-                  { label: "My account", href: WP.account },
-                ].map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    className="block rounded-lg px-3 py-2 text-sm text-ink hover:bg-haze"
-                  >
-                    {item.label}
-                  </a>
-                ))}
-              </div>
-            </details>
+            <EServicesDropdown />
 
             <Link
               href="/shop?on_sale=1"
