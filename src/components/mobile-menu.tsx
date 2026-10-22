@@ -81,14 +81,147 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
             </div>
 
             <nav className="flex-1 overflow-y-auto overscroll-contain p-3">
+              {/* All Categories - expandable with departments */}
               <div className="space-y-0.5">
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setExpanded(expanded === "all-categories" ? null : "all-categories")}
+                    aria-label="Show all categories"
+                    aria-expanded={expanded === "all-categories"}
+                    className="w-full flex items-center justify-between rounded-xl px-3 py-3 text-[14px] font-semibold text-ink hover:bg-haze"
+                  >
+                    <span>All Categories</span>
+                    <svg
+                      viewBox="0 0 24 24"
+                      className={`size-4 transition-transform text-muted ${expanded === "all-categories" ? "rotate-90" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="m9 6 6 6-6 6" strokeLinecap="round" />
+                    </svg>
+                  </button>
+
+                  {expanded === "all-categories" && (
+                    <div className="mt-1 ml-2 border-l border-line pl-3 space-y-2">
+                      {departments.map((department) => (
+                        <div key={department.key}>
+                          <Link
+                            href={department.href}
+                            onClick={close}
+                            className="block rounded-lg px-2 py-1.5 text-[14px] font-semibold text-ink hover:bg-haze"
+                          >
+                            {department.name}
+                          </Link>
+                          <div className="ml-2 mt-1 space-y-1">
+                            {department.groups.map((group) => (
+                              <div key={group.name}>
+                                <p className="px-1 pb-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
+                                  {group.name}
+                                </p>
+                                {group.categories.map((category) => (
+                                  <Link
+                                    key={category.id}
+                                    href={categoryHref(category.slug)}
+                                    onClick={close}
+                                    className="block rounded-lg px-2 py-1.5 text-[14px] text-muted hover:bg-haze hover:text-ink"
+                                  >
+                                    {decodeEntities(category.name)}
+                                  </Link>
+                                ))}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                      <Link
+                        href="/categories"
+                        onClick={close}
+                        className="mt-2 block rounded-lg px-2 py-1.5 text-[14px] font-semibold"
+                        style={{ color: BLUE }}
+                      >
+                        All departments →
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* E-Services - expandable */}
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setExpanded(expanded === "e-services" ? null : "e-services")}
+                    aria-label="Show E-Services"
+                    aria-expanded={expanded === "e-services"}
+                    className="w-full flex items-center justify-between rounded-xl px-3 py-3 text-[14px] font-semibold text-ink hover:bg-haze"
+                  >
+                    <span>E-Services</span>
+                    <svg
+                      viewBox="0 0 24 24"
+                      className={`size-4 transition-transform text-muted ${expanded === "e-services" ? "rotate-90" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="m9 6 6 6-6 6" strokeLinecap="round" />
+                    </svg>
+                  </button>
+
+                  {expanded === "e-services" && (
+                    <div className="mt-1 ml-2 border-l border-line pl-3 space-y-1">
+                      <a
+                        href="/faq"
+                        onClick={close}
+                        className="block rounded-lg px-2 py-1.5 text-[14px] font-semibold text-ink hover:bg-haze"
+                      >
+                        FAQ
+                      </a>
+                      <a
+                        href="/contact"
+                        onClick={close}
+                        className="block rounded-lg px-2 py-1.5 text-[14px] font-semibold text-ink hover:bg-haze"
+                      >
+                        Contact us
+                      </a>
+                      <a
+                        href="/faq"
+                        onClick={close}
+                        className="block rounded-lg px-2 py-1.5 text-[14px] font-semibold text-ink hover:bg-haze"
+                      >
+                        Delivery info
+                      </a>
+                      <a
+                        href="/contact"
+                        onClick={close}
+                        className="block rounded-lg px-2 py-1.5 text-[14px] font-semibold text-ink hover:bg-haze"
+                      >
+                        Returns
+                      </a>
+                      <a
+                        href={WP.account}
+                        className="block rounded-lg px-2 py-1.5 text-[14px] font-semibold text-ink hover:bg-haze"
+                      >
+                        My account
+                      </a>
+                    </div>
+                  )}
+                </div>
+
+                {/* All Brands - direct link */}
                 <Link
-                  href="/shop"
+                  href="/brands"
                   onClick={close}
-                  className="block rounded-xl px-3 py-3 text-[14px] font-semibold text-ink hover:bg-haze"
+                  className="flex items-center gap-2 rounded-xl px-3 py-3 text-[14px] font-semibold text-ink hover:bg-haze"
                 >
-                  All products
+                  <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M8 12h8M12 8v8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  All Brands
                 </Link>
+
+                {/* Deal of the Day - direct link */}
                 <Link
                   href="/shop?on_sale=1"
                   onClick={close}
@@ -101,86 +234,6 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                     />
                   </svg>
                   Deal of the Day
-                </Link>
-                <Link
-                  href="/contact"
-                  onClick={close}
-                  className="block rounded-xl px-3 py-3 text-[14px] font-semibold text-ink hover:bg-haze"
-                >
-                  Contact
-                </Link>
-              </div>
-
-              <div className="my-3 h-px bg-line" />
-
-              <p className="px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
-                Departments
-              </p>
-
-              <div className="space-y-0.5">
-                {departments.map((department) => {
-                  const isOpen = expanded === department.key;
-                  return (
-                    <div key={department.key}>
-                      <div className="flex items-center gap-1">
-                        <Link
-                          href={department.href}
-                          onClick={close}
-                          className="min-w-0 flex-1 rounded-xl px-3 py-2.5 text-[15px] font-semibold text-ink hover:bg-haze"
-                        >
-                          {department.name}
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() => setExpanded(isOpen ? null : department.key)}
-                          aria-label={`Show ${department.name} categories`}
-                          aria-expanded={isOpen}
-                          className="grid size-9 shrink-0 place-items-center rounded-lg text-muted hover:bg-haze"
-                        >
-                          <svg
-                            viewBox="0 0 24 24"
-                            className={`size-4 transition-transform ${isOpen ? "rotate-90" : ""}`}
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                          >
-                            <path d="m9 6 6 6-6 6" strokeLinecap="round" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      {isOpen && (
-                        <div className="mb-2 ml-2 border-l border-line pl-3">
-                          {department.groups.map((group) => (
-                            <div key={group.name} className="mb-2 last:mb-0">
-                              <p className="px-2 pb-0.5 text-[11px] font-bold uppercase tracking-[0.14em] text-muted">
-                                {group.name}
-                              </p>
-                              {group.categories.map((category) => (
-                                <Link
-                                  key={category.id}
-                                  href={categoryHref(category.slug)}
-                                  onClick={close}
-                                  className="block rounded-lg px-2 py-2 text-[15px] text-muted hover:bg-haze hover:text-ink"
-                                >
-                                  {decodeEntities(category.name)}
-                                </Link>
-                              ))}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-
-                <Link
-                  href="/categories"
-                  onClick={close}
-                  className="mt-1 block rounded-xl px-3 py-2.5 text-[15px] font-semibold"
-                  style={{ color: BLUE }}
-                >
-                  All departments →
                 </Link>
               </div>
             </nav>

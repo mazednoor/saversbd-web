@@ -32,7 +32,7 @@ export async function SiteHeader() {
         </div>
 
         {/* Search (desktop only) */}
-        <div className="hidden flex-1 justify-center md:flex">
+        <div className="hidden md:flex flex-1 justify-center">
           <div className="w-full max-w-3xl">
             <SearchAutosuggest />
           </div>
