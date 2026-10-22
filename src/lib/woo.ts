@@ -82,10 +82,10 @@ export interface ProductResult {
   totalPages: number;
 }
 
-async function storeFetch(path: string): Promise<{ data: unknown; headers: Headers; ok: boolean }> {
+async function storeFetch(path: string, revalidate = REVALIDATE): Promise<{ data: unknown; headers: Headers; ok: boolean }> {
   const res = await fetch(`${STORE}${path}`, {
     headers: { Accept: "application/json" },
-    next: { revalidate: REVALIDATE, tags: ["products", "categories"] },
+    next: { revalidate, tags: ["products", "categories"] },
     signal: AbortSignal.timeout(20_000),
   });
 
@@ -202,6 +202,26 @@ export async function getRelatedProducts(product: StoreProduct, limit = 4): Prom
     exclude: [product.id],
   });
   return products.slice(0, limit);
+}
+
+/**
+ * The whole catalogue (956 products on saversbd.com). Used by the brand
+ * pages, which need every product to match names against. Cached for an hour
+ * so the extra requests are paid once.
+ */
+export async function getAllProducts(): Promise<StoreProduct[]> {
+  const all: StoreProduct[] = [];
+  try {
+    for (let page = 1; page <= 12; page++) {
+      const { data, ok, headers } = await storeFetch(`/products?per_page=100&page=${page}`, 3600);
+      if (!ok || !Array.isArray(data)) break;
+      all.push(...(data as StoreProduct[]));
+      if (page >= Number(headers.get("x-wp-totalpages") ?? 1)) break;
+    }
+    return all;
+  } catch {
+    return all;
+  }
 }
 
 export async function getStoreCurrency(): Promise<StorePrice | null> {

@@ -5,7 +5,8 @@ import { SectionHeading } from "@/components/ui";
 import { decodeEntities } from "@/lib/format";
 import { catchyTitle } from "@/lib/catchy";
 import { buildTaxonomy } from "@/lib/taxonomy";
-import { getCategories, getCategoriesWithImages, getProducts } from "@/lib/woo";
+import { buildBrands } from "@/lib/brands";
+import { getAllProducts, getCategories, getCategoriesWithImages, getProducts } from "@/lib/woo";
 import { WP, WP_URL } from "@/lib/site";
 
 export const revalidate = 600;
@@ -30,16 +31,21 @@ export default async function HomePage() {
 
   // One product row per department (the curated 7-department taxonomy).
   const departments = buildTaxonomy(categories);
-  const departmentSections = await Promise.all(
-    departments.map(async (department) => {
-      const { products } = await getProducts({
-        category: department.categoryIds,
-        perPage: 8,
-        orderby: "popularity",
-      });
-      return { department, products: priced(products).slice(0, 8) };
-    }),
-  );
+  const [catalogue, departmentSections] = await Promise.all([
+    getAllProducts(),
+    Promise.all(
+      departments.map(async (department) => {
+        const { products } = await getProducts({
+          category: department.categoryIds,
+          perPage: 8,
+          orderby: "popularity",
+        });
+        return { department, products: priced(products).slice(0, 8) };
+      }),
+    ),
+  ]);
+
+  const brands = buildBrands(catalogue).slice(0, 12);
 
   return (
     <>
@@ -187,6 +193,43 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Shop by brands */}
+      {brands.length ? (
+        <section id="brands" className="section">
+          <div className="container-page">
+            <SectionHeading
+              eyebrow="Trusted names"
+              title="Shop by brands"
+              linkLabel="All brands"
+              href="/brands"
+            />
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+              {brands.map((brand) => (
+                <Link
+                  key={brand.slug}
+                  href={`/brand/${brand.slug}`}
+                  className="group flex flex-col items-center gap-2 rounded-2xl border border-line bg-white p-4 text-center transition hover:-translate-y-0.5 hover:shadow-[0_14px_40px_-28px_rgba(4,0,55,0.5)]"
+                >
+                  <span className="relative size-20 overflow-hidden rounded-full bg-haze">
+                    {brand.image ? (
+                      <Image
+                        src={brand.image}
+                        alt={brand.name}
+                        fill
+                        sizes="80px"
+                        className="object-contain p-2 transition duration-300 group-hover:scale-105"
+                      />
+                    ) : null}
+                  </span>
+                  <span className="text-sm font-semibold leading-tight text-ink">{brand.name}</span>
+                  <span className="text-[11px] text-muted">{brand.count} products</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {/* Deals */}
       {deals.length ? (
