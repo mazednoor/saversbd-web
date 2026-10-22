@@ -181,7 +181,7 @@ export function SearchAutosuggest({ variant = "desktop" }: { variant?: "desktop"
                     type="button"
                     onClick={() => navigateToProduct(suggestion.slug)}
                     onMouseEnter={() => setActive(index)}
-                    className={`flex w-full items-center gap-3 px-3 py-2 text-left transition ${
+                    className={`flex w-full cursor-pointer items-center gap-3 px-3 py-2 text-left transition ${
                       index === active ? "bg-haze" : "hover:bg-haze"
                     }`}
                   >
@@ -209,7 +209,7 @@ export function SearchAutosuggest({ variant = "desktop" }: { variant?: "desktop"
                 <button
                   type="button"
                   onClick={() => submitSearch(query)}
-                  className="block w-full px-3 py-2 text-left text-sm font-semibold"
+                  className="block w-full cursor-pointer px-3 py-2 text-left text-sm font-semibold"
                   style={{ color: BLUE }}
                 >
                   See all results for “{query}” →
