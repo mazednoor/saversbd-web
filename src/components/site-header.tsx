@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SearchAutosuggest } from "./search-autosuggest";
 import { getTopCategories } from "@/lib/woo";
 import { decodeEntities } from "@/lib/format";
+import { CloseDetailsOnOutsideClick } from "./close-details-on-outside-click";
 import { WP } from "@/lib/site";
 
 const BLUE = "#2060a0";
@@ -11,6 +12,7 @@ export async function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white">
+      <CloseDetailsOnOutsideClick />
       {/* Blue accent line (matches the reference header) */}
       <div className="h-1.5" style={{ backgroundColor: BLUE }} />
 
