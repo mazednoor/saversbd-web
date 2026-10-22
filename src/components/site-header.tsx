@@ -77,7 +77,7 @@ export async function SiteHeader() {
       </div>
 
       {/* Menu row (on its own line) */}
-      <div className="border-t border-line bg-haze/60">
+      <div className="bg-haze/60">
         <div className="container-page flex flex-wrap items-center gap-1 py-1">
           <nav aria-label="Primary" className="flex items-center gap-1">
             <AllCategoriesDropdown categories={active} />
