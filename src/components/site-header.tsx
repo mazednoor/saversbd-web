@@ -31,95 +31,6 @@ export async function SiteHeader() {
           <SearchForm />
         </div>
 
-        {/* Menu (desktop) */}
-        <nav
-          aria-label="Primary"
-          className="hidden items-center gap-1 lg:flex"
-        >
-          {/* All Categories dropdown */}
-          <details className="group relative">
-            <summary
-              className="flex cursor-pointer list-none items-center gap-1.5 rounded px-3 py-2 text-sm font-semibold text-white [&::-webkit-details-marker]:hidden"
-              style={{ backgroundColor: BLUE }}
-            >
-              All Categories
-              <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.4">
-                <path d="m6 9 6 6 6-6" strokeLinecap="round" />
-              </svg>
-            </summary>
-            <div className="absolute left-0 top-11 z-50 w-64 rounded-xl border border-line bg-white p-2 shadow-xl">
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  href={`/product-category/${category.slug}`}
-                  className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-ink hover:bg-haze"
-                >
-                  <span>{decodeEntities(category.name)}</span>
-                  <span className="text-xs text-muted">{category.count}</span>
-                </Link>
-              ))}
-              <Link
-                href="/categories"
-                className="mt-1 block rounded-lg px-3 py-2 text-sm font-semibold"
-                style={{ color: BLUE }}
-              >
-                All departments →
-              </Link>
-            </div>
-          </details>
-
-          {/* E-Services dropdown */}
-          <details className="group relative">
-            <summary className="flex cursor-pointer list-none items-center gap-1 rounded px-3 py-2 text-sm font-medium text-ink hover:bg-haze [&::-webkit-details-marker]:hidden">
-              E-Services
-              <svg viewBox="0 0 24 24" className="size-3.5 text-muted" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="m6 9 6 6 6-6" strokeLinecap="round" />
-              </svg>
-            </summary>
-            <div className="absolute left-0 top-11 z-50 w-56 rounded-xl border border-line bg-white p-2 shadow-xl">
-              {[
-                { label: "FAQ", href: "/faq" },
-                { label: "Contact us", href: "/contact" },
-                { label: "Delivery info", href: "/faq" },
-                { label: "Returns", href: "/contact" },
-                { label: "My account", href: WP.account },
-              ].map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="block rounded-lg px-3 py-2 text-sm text-ink hover:bg-haze"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
-          </details>
-
-          <Link
-            href="/shop?on_sale=1"
-            className="flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium text-ink hover:bg-haze"
-          >
-            <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke={BLUE} strokeWidth="2">
-              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" strokeLinecap="round" />
-            </svg>
-            Deal of the Day
-          </Link>
-
-          <Link
-            href="/shop?on_sale=1"
-            className="rounded px-3 py-2 text-sm font-medium text-ink hover:bg-haze"
-          >
-            Promo Flyer
-          </Link>
-
-          <a
-            href={WP.shop}
-            className="rounded px-3 py-2 text-sm font-medium text-ink hover:bg-haze"
-          >
-            SaversBD
-          </a>
-        </nav>
-
         {/* Right actions */}
         <div className="ml-auto flex items-center gap-1 md:gap-2">
           <a
@@ -150,6 +61,96 @@ export async function SiteHeader() {
             </svg>
             <span className="hidden sm:inline">Cart</span>
           </a>
+        </div>
+      </div>
+
+      {/* Menu row (on its own line) */}
+      <div className="border-t border-line bg-haze/60">
+        <div className="container-page flex items-center gap-1 overflow-x-auto py-1.5">
+          <nav aria-label="Primary" className="flex items-center gap-1">
+            {/* All Categories dropdown */}
+            <details className="group relative">
+              <summary
+                className="flex cursor-pointer list-none items-center gap-1.5 rounded px-3 py-2 text-sm font-semibold text-white [&::-webkit-details-marker]:hidden"
+                style={{ backgroundColor: BLUE }}
+              >
+                All Categories
+                <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.4">
+                  <path d="m6 9 6 6 6-6" strokeLinecap="round" />
+                </svg>
+              </summary>
+              <div className="absolute left-0 top-11 z-50 w-64 rounded-xl border border-line bg-white p-2 shadow-xl">
+                {categories.map((category) => (
+                  <Link
+                    key={category.id}
+                    href={`/product-category/${category.slug}`}
+                    className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-ink hover:bg-haze"
+                  >
+                    <span>{decodeEntities(category.name)}</span>
+                    <span className="text-xs text-muted">{category.count}</span>
+                  </Link>
+                ))}
+                <Link
+                  href="/categories"
+                  className="mt-1 block rounded-lg px-3 py-2 text-sm font-semibold"
+                  style={{ color: BLUE }}
+                >
+                  All departments →
+                </Link>
+              </div>
+            </details>
+
+            {/* E-Services dropdown */}
+            <details className="group relative">
+              <summary className="flex cursor-pointer list-none items-center gap-1 rounded px-3 py-2 text-sm font-medium text-ink hover:bg-white [&::-webkit-details-marker]:hidden">
+                E-Services
+                <svg viewBox="0 0 24 24" className="size-3.5 text-muted" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="m6 9 6 6 6-6" strokeLinecap="round" />
+                </svg>
+              </summary>
+              <div className="absolute left-0 top-11 z-50 w-56 rounded-xl border border-line bg-white p-2 shadow-xl">
+                {[
+                  { label: "FAQ", href: "/faq" },
+                  { label: "Contact us", href: "/contact" },
+                  { label: "Delivery info", href: "/faq" },
+                  { label: "Returns", href: "/contact" },
+                  { label: "My account", href: WP.account },
+                ].map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    className="block rounded-lg px-3 py-2 text-sm text-ink hover:bg-haze"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            </details>
+
+            <Link
+              href="/shop?on_sale=1"
+              className="flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium text-ink hover:bg-white"
+            >
+              <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke={BLUE} strokeWidth="2">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" strokeLinecap="round" />
+              </svg>
+              Deal of the Day
+            </Link>
+
+            <Link
+              href="/shop?on_sale=1"
+              className="rounded px-3 py-2 text-sm font-medium text-ink hover:bg-white"
+            >
+              Promo Flyer
+            </Link>
+
+            <a
+              href={WP.shop}
+              className="rounded px-3 py-2 text-sm font-medium text-ink hover:bg-white"
+            >
+              SaversBD
+            </a>
+          </nav>
         </div>
       </div>
 
