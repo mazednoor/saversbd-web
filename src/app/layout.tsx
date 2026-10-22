@@ -3,6 +3,8 @@ import { Inter, Lora } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { MobileMenuProvider } from "@/components/mobile-menu-context";
+import { MobileBottomBar } from "@/components/mobile-bottom-bar";
 import { SITE, SITE_URL, WP_URL } from "@/lib/site";
 
 const inter = Inter({
@@ -56,9 +58,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
-        <SiteHeader />
-        <main id="main">{children}</main>
-        <SiteFooter />
+        <MobileMenuProvider>
+          <SiteHeader />
+          <main id="main">{children}</main>
+          <SiteFooter />
+          <MobileBottomBar />
+        </MobileMenuProvider>
       </body>
     </html>
   );

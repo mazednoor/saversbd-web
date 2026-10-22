@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SearchAutosuggest } from "./search-autosuggest";
+import { useMobileMenu } from "./mobile-menu-context";
 import { decodeEntities } from "@/lib/format";
 import { WP } from "@/lib/site";
 import type { StoreCategory } from "@/lib/woo";
@@ -10,8 +11,10 @@ import type { StoreCategory } from "@/lib/woo";
 const BLUE = "#2060a0";
 
 export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
-  const [open, setOpen] = useState(false);
+  const { open, setOpen } = useMobileMenu();
   const [expanded, setExpanded] = useState<number | null>(null);
+
+  const close = () => setOpen(false);
 
   // Lock page scrolling while the drawer is open.
   useEffect(() => {
@@ -39,8 +42,6 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
 
   const childrenOf = (parentId: number) =>
     categories.filter((c) => c.parent === parentId && c.count > 0).sort((a, b) => b.count - a.count);
-
-  const close = () => setOpen(false);
 
   return (
     <>

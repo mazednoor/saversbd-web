@@ -9,7 +9,7 @@ export async function SiteFooter() {
 
   return (
     <footer className="mt-16 border-t border-line bg-haze">
-      <div className="container-page grid grid-cols-2 gap-8 py-10 md:gap-10 md:py-12 lg:grid-cols-4">
+      <div className="container-page grid grid-cols-2 gap-8 py-10 pb-24 md:gap-10 md:py-12 lg:grid-cols-4">
         <div className="col-span-2 lg:col-span-1">
           <Link href="/" className="font-display text-2xl font-bold text-ink">
             Savers<span className="text-brand">BD</span>
