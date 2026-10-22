@@ -159,7 +159,7 @@ export function SearchAutosuggest({ variant = "desktop" }: { variant?: "desktop"
         </svg>
         <button
           type="submit"
-          className="absolute right-1.5 top-1.5 h-8 rounded-full bg-brand px-8 text-[11px] font-semibold text-white hover:bg-brand-dark"
+          className="absolute right-1.5 top-1.5 h-8 rounded-full bg-brand px-8 text-[14px] font-semibold text-white cursor-pointer hover:bg-brand-dark"
         >
           Search
         </button>
