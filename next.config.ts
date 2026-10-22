@@ -22,6 +22,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "secure.gravatar.com" },
     ],
     formats: ["image/avif", "image/webp"],
+    qualities: [75, 90],
     // If your host enables hotlink protection and product images 403,
     // set NEXT_PUBLIC_UNOPTIMIZED_IMAGES=1 to bypass the optimizer.
     unoptimized: process.env.NEXT_PUBLIC_UNOPTIMIZED_IMAGES === "1",
