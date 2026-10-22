@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SearchForm } from "./search-form";
+import { SearchAutosuggest } from "./search-autosuggest";
 import { getTopCategories } from "@/lib/woo";
 import { decodeEntities } from "@/lib/format";
 import { WP } from "@/lib/site";
@@ -29,7 +29,7 @@ export async function SiteHeader() {
         {/* Search (desktop) */}
         <div className="hidden justify-center md:flex">
           <div className="w-full max-w-3xl">
-            <SearchForm />
+            <SearchAutosuggest />
           </div>
         </div>
 
@@ -158,7 +158,7 @@ export async function SiteHeader() {
 
       {/* Mobile search */}
       <div className="container-page pb-2 md:hidden">
-        <SearchForm variant="mobile" />
+        <SearchAutosuggest variant="mobile" />
       </div>
 
       {/* Mobile menu */}
