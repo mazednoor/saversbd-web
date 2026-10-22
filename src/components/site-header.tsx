@@ -91,19 +91,6 @@ export async function SiteHeader() {
               Deal of the Day
             </Link>
 
-            <Link
-              href="/shop?on_sale=1"
-              className="rounded px-3 py-2 text-sm font-medium text-ink hover:bg-white"
-            >
-              Promo Flyer
-            </Link>
-
-            <a
-              href={WP.shop}
-              className="rounded px-3 py-2 text-sm font-medium text-ink hover:bg-white"
-            >
-              SaversBD
-            </a>
           </nav>
         </div>
       </div>
@@ -127,9 +114,6 @@ export async function SiteHeader() {
           </Link>
           <Link href="/shop?on_sale=1" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-haze">
             Deal of the Day
-          </Link>
-          <Link href="/shop?on_sale=1" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-haze">
-            Promo Flyer
           </Link>
           <Link href="/categories" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-haze">
             All Categories
