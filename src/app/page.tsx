@@ -1,11 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { PostCard } from "@/components/post-card";
 import { ProductCard } from "@/components/product-card";
 import { SectionHeading } from "@/components/ui";
 import { decodeEntities } from "@/lib/format";
-import { getPosts } from "@/lib/wp";
-import { getCategories, getCategoriesWithImages, getProducts } from "@/lib/woo";
+import { getCategories, getCategoriesWithImages, getProducts, getTopCategories } from "@/lib/woo";
 import { WP, WP_URL } from "@/lib/site";
 
 export const revalidate = 600;
@@ -14,13 +12,13 @@ const HERO_IMAGE =
   process.env.NEXT_PUBLIC_HERO_IMAGE ?? `${WP_URL}/wp-content/uploads/2025/01/slider-1-scaled.webp`;
 
 export default async function HomePage() {
-  const [{ products: popular, total }, { products: saleProducts }, categoryTiles, { posts }, categories] =
+  const [{ products: popular, total }, { products: saleProducts }, categoryTiles, categories, menuCategories] =
     await Promise.all([
       getProducts({ perPage: 24, orderby: "popularity" }),
       getProducts({ perPage: 12, onSale: true, orderby: "popularity" }),
       getCategoriesWithImages(8),
-      getPosts({ perPage: 3 }),
       getCategories(),
+      getTopCategories(10),
     ]);
 
   // A handful of catalogue entries are "contact for price" — keep the
@@ -28,6 +26,18 @@ export default async function HomePage() {
   const priced = (list: typeof popular) => list.filter((product) => Number(product.prices.price) > 0);
   const bestSellers = priced(popular).slice(0, 8);
   const deals = priced(saleProducts).slice(0, 4);
+
+  // One product row per department listed in the main menu.
+  const categorySections = await Promise.all(
+    menuCategories.map(async (category) => {
+      const { products } = await getProducts({
+        category: category.id,
+        perPage: 8,
+        orderby: "popularity",
+      });
+      return { category, products: priced(products).slice(0, 8) };
+    }),
+  );
 
   return (
     <>
@@ -202,19 +212,26 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Blog */}
-      {posts.length ? (
-        <section className="section bg-haze">
-          <div className="container-page">
-            <SectionHeading eyebrow="From the blog" title="Guides for smarter shopping" href="/blog" linkLabel="All articles" />
-            <div className="grid gap-5 md:grid-cols-3">
-              {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
+      {/* One product row per main-menu category */}
+      {categorySections.map(
+        ({ category, products }, index) =>
+          products.length > 0 && (
+            <section key={category.id} className={`section ${index % 2 === 0 ? "bg-haze" : ""}`}>
+              <div className="container-page">
+                <SectionHeading
+                  title={decodeEntities(category.name)}
+                  href={`/product-category/${category.slug}`}
+                  linkLabel={`View all ${category.count} products`}
+                />
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                  {products.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              </div>
+            </section>
+          ),
+      )}
 
       {/* Hand-off CTA */}
       <section className="section">
