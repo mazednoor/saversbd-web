@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
@@ -16,6 +17,7 @@ import {
   getCategories,
   getChildCategories,
   getAllProducts,
+  buildCategoryCovers,
   getProducts,
   type ProductQuery,
   type StoreCategory,
@@ -133,6 +135,13 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
     ? placement.group.categories.filter((item) => item.slug !== category.slug)
     : children;
 
+  // Subcategories shown as image tiles: the WordPress children of this
+  // category, or — when it has none — its siblings in the same group.
+  const covers = buildCategoryCovers(catalogue);
+  const subcategories = (children.length ? children : siblings)
+    .filter((item) => item.count > 0)
+    .sort((a, b) => b.count - a.count);
+
   const brandOptions: BrandOption[] = buildBrands(catalogue).map((item) => ({
     slug: item.slug,
     name: item.name,
@@ -200,6 +209,49 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
             </Link>
           ))}
         </div>
+      ) : null}
+
+      {/* Subcategories with images */}
+      {subcategories.length ? (
+        <section className="mt-8">
+          <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-muted">
+            Shop by subcategory
+          </h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+            {subcategories.map((subcategory) => {
+              const cover = covers.get(subcategory.id);
+              return (
+                <Link
+                  key={subcategory.id}
+                  href={`/product-category/${subcategory.slug}`}
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-[0_14px_40px_-28px_rgba(4,0,55,0.5)]"
+                >
+                  <span className="relative block aspect-square overflow-hidden bg-haze">
+                    {cover ? (
+                      <Image
+                        src={cover.src}
+                        alt={decodeEntities(subcategory.name)}
+                        fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
+                        className="object-contain p-4 transition duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <span className="grid h-full place-items-center text-[10px] text-muted">No image</span>
+                    )}
+                  </span>
+                  <span className="flex flex-1 flex-col gap-0.5 p-3">
+                    <span className="line-clamp-2 text-sm font-semibold leading-snug text-ink">
+                      {decodeEntities(subcategory.name)}
+                    </span>
+                    <span className="mt-auto pt-1 text-[11px] text-muted">
+                      {subcategory.count} products
+                    </span>
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
       ) : null}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[16rem_1fr]">

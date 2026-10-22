@@ -58,7 +58,7 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
               onMouseEnter={() => setDepartment(item.key)}
             >
               <Link
-                href={item.href}
+                href={item.landingHref}
                 className="flex items-center justify-between rounded-lg px-3 py-2.5 text-[15px] font-semibold text-ink hover:bg-haze"
               >
                 <span>{item.name}</span>

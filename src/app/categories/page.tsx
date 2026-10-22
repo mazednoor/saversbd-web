@@ -50,6 +50,40 @@ export default async function CategoriesPage() {
         ))}
       </nav>
 
+      {/* Department landing pages */}
+      <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
+        {departments.map((department) => {
+          const cover = department.anchor ? covers.get(department.anchor.id) : null;
+          return (
+            <Link
+              key={department.key}
+              href={department.landingHref}
+              className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-[0_14px_40px_-28px_rgba(4,0,55,0.5)]"
+            >
+              <span className="relative block aspect-square overflow-hidden bg-haze">
+                {cover ? (
+                  <Image
+                    src={cover.src}
+                    alt={department.name}
+                    fill
+                    sizes="(max-width: 640px) 50vw, 200px"
+                    className="object-contain p-4 transition duration-300 group-hover:scale-105"
+                  />
+                ) : (
+                  <span className="grid h-full place-items-center text-[10px] text-muted">No image</span>
+                )}
+              </span>
+              <span className="flex flex-1 flex-col gap-0.5 p-3">
+                <span className="line-clamp-2 text-sm font-semibold leading-snug text-ink">
+                  {department.name}
+                </span>
+                <span className="mt-auto pt-1 text-[11px] text-muted">{department.count} products</span>
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+
       {departments.map((department) => (
         <section key={department.key} id={department.key} className="mt-12 scroll-mt-32 first:mt-10">
           <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-3">
@@ -61,7 +95,7 @@ export default async function CategoriesPage() {
               </p>
             </div>
             <Link
-              href={department.href}
+              href={department.landingHref}
               className="text-sm font-semibold text-ink underline-offset-4 hover:text-brand hover:underline"
             >
               Shop all {department.name} →

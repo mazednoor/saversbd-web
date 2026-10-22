@@ -216,6 +216,8 @@ export interface ResolvedDepartment {
   catchy: string;
   count: number;
   href: string;
+  /** Dedicated landing page for the department (its own category page). */
+  landingHref: string;
   categoryIds: number[];
   anchor: StoreCategory | null;
   groups: ResolvedGroup[];
@@ -257,6 +259,7 @@ export function buildTaxonomy(categories: StoreCategory[]): ResolvedDepartment[]
 
     const all = groups.flatMap((group) => group.categories);
     const unique = Array.from(new Map(all.map((category) => [category.id, category])).values());
+    const anchor = department.anchor ? bySlug.get(department.anchor) ?? null : null;
 
     return {
       key: department.key,
@@ -264,8 +267,9 @@ export function buildTaxonomy(categories: StoreCategory[]): ResolvedDepartment[]
       catchy: department.catchy,
       count: sumCounts(unique),
       href: shopHref(unique),
+      landingHref: anchor ? `/product-category/${anchor.slug}` : shopHref(unique),
       categoryIds: unique.map((category) => category.id),
-      anchor: department.anchor ? bySlug.get(department.anchor) ?? null : null,
+      anchor,
       groups,
     };
   }).filter((department) => department.groups.length > 0);
