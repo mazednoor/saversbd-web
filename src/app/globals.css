@@ -1,0 +1,226 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  /* Brand palette lifted from the live Kadence theme so the new frontend
+     feels like the same store. */
+  --color-brand: #e21e51;
+  --color-brand-dark: #b8123d;
+  --color-brand-soft: #fde8ee;
+  --color-royal: #4d40ff;
+  --color-ink: #040037;
+  --color-navy: #032075;
+  --color-muted: #514d7c;
+  --color-mist: #efeff5;
+  --color-haze: #f8f9fa;
+  --color-line: #deddeb;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-lora), ui-serif, Georgia, Cambria, "Times New Roman", serif;
+
+  --radius-card: 1rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: #fff;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: var(--color-brand);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: 1290px;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .container-page {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.7rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      border-color 150ms ease,
+      transform 150ms ease;
+    cursor: pointer;
+  }
+
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  .btn-primary {
+    background: var(--color-brand);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: var(--color-brand-dark);
+  }
+
+  .btn-ink {
+    background: var(--color-ink);
+    color: #fff;
+  }
+
+  .btn-ink:hover {
+    background: var(--color-royal);
+  }
+
+  .btn-outline {
+    border: 1px solid var(--color-line);
+    background: #fff;
+    color: var(--color-ink);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--color-ink);
+  }
+
+  .card {
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: #fff;
+  }
+
+  .section {
+    padding-block: 3rem;
+  }
+
+  @media (min-width: 768px) {
+    .section {
+      padding-block: 4rem;
+    }
+  }
+}
+
+/* ---------- WordPress content (posts, pages) ---------- */
+
+.wp-content {
+  --tw-prose-links: var(--color-brand);
+  max-width: 100%;
+}
+
+.wp-content img {
+  border-radius: 0.75rem;
+  height: auto;
+}
+
+.wp-content iframe,
+.wp-content video {
+  max-width: 100%;
+  border-radius: 0.75rem;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  width: 100%;
+}
+
+.wp-content .table-wrap {
+  overflow-x: auto;
+  margin-block: 1.5rem;
+}
+
+.wp-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.wp-content th,
+.wp-content td {
+  border: 1px solid var(--color-line);
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+}
+
+.wp-content th {
+  background: var(--color-haze);
+}
+
+.wp-content figure {
+  margin-block: 1.5rem;
+}
+
+.wp-content figcaption {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.wp-content .wp-block-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.wp-content .wp-block-column {
+  flex: 1 1 220px;
+}
+
+.wp-content .wp-block-button__link {
+  display: inline-block;
+  border-radius: 9999px;
+  background: var(--color-brand);
+  color: #fff;
+  padding: 0.7rem 1.25rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Hide Kadence/Elementor chrome that makes no sense without its stylesheet. */
+.wp-content .kb-row-layout-wrap,
+.wp-content .kt-row-layout-inner {
+  max-width: 100%;
+}
+
+/* Product descriptions include <br> separated spec lists. */
+.product-description table {
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.product-description img {
+  border-radius: 0.75rem;
+}

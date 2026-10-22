@@ -1,0 +1,2 @@
+# Static assets served from the Next.js origin.
+# WordPress media is loaded directly from the WordPress host.

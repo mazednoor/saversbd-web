@@ -1,0 +1,147 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Breadcrumbs } from "@/components/breadcrumbs";
+import { Pagination } from "@/components/pagination";
+import { ProductCard } from "@/components/product-card";
+import { SortSelect } from "@/components/sort-select";
+import { EmptyState } from "@/components/ui";
+import { absoluteUrl, decodeEntities, excerptFrom } from "@/lib/format";
+import {
+  getCategoryBySlug,
+  getCategories,
+  getChildCategories,
+  getProducts,
+  type ProductQuery,
+  type StoreCategory,
+} from "@/lib/woo";
+
+export const revalidate = 600;
+
+const PER_PAGE = 24;
+
+const SORTS: Record<string, { orderby: ProductQuery["orderby"]; order: ProductQuery["order"] }> = {
+  "date-desc": { orderby: "date", order: "desc" },
+  "popularity-desc": { orderby: "popularity", order: "desc" },
+  "price-asc": { orderby: "price", order: "asc" },
+  "price-desc": { orderby: "price", order: "desc" },
+  "title-asc": { orderby: "title", order: "asc" },
+};
+
+type PageProps = {
+  params: Promise<{ slug: string[] }>;
+  searchParams: Promise<{ page?: string; orderby?: string }>;
+};
+
+/** Resolves /product-category/toys and /product-category/toys/0-12m alike. */
+async function resolveCategory(segments: string[]) {
+  const slug = segments[segments.length - 1];
+  const category = await getCategoryBySlug(slug);
+  if (!category) return null;
+
+  const categories = await getCategories();
+  const byId = new Map(categories.map((item) => [item.id, item]));
+  const chain: StoreCategory[] = [];
+  let cursor: StoreCategory | undefined = category;
+  while (cursor && chain.length < 6) {
+    chain.unshift(cursor);
+    cursor = cursor.parent ? byId.get(cursor.parent) : undefined;
+  }
+  return { category, chain };
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const resolved = await resolveCategory(slug);
+  if (!resolved) return { title: "Category not found" };
+
+  const { category } = resolved;
+  const name = decodeEntities(category.name);
+  const description =
+    excerptFrom(category.description, 158) ||
+    `Shop ${name} at SaversBD — authentic products, cash on delivery across Bangladesh.`;
+
+  return {
+    title: name,
+    description,
+    alternates: { canonical: absoluteUrl(`/product-category/${category.slug}`) },
+    openGraph: { title: name, description, url: absoluteUrl(`/product-category/${category.slug}`) },
+  };
+}
+
+export default async function CategoryPage({ params, searchParams }: PageProps) {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
+  const resolved = await resolveCategory(slug);
+  if (!resolved) notFound();
+
+  const { category, chain } = resolved;
+  const page = Math.max(1, Number(query.page) || 1);
+  const sort = SORTS[query.orderby ?? "date-desc"] ?? SORTS["date-desc"];
+
+  const [children, result] = await Promise.all([
+    getChildCategories(category.id),
+    getProducts({ page, perPage: PER_PAGE, category: category.id, ...sort }),
+  ]);
+
+  return (
+    <div className="container-page py-8">
+      <Breadcrumbs
+        items={[
+          { label: "Shop", href: "/shop" },
+          ...chain.slice(0, -1).map((item) => ({ label: decodeEntities(item.name), href: `/product-category/${item.slug}` })),
+          { label: decodeEntities(category.name) },
+        ]}
+      />
+
+      <header className="mt-4 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-ink md:text-4xl">{decodeEntities(category.name)}</h1>
+          <p className="mt-2 max-w-2xl text-sm text-muted">
+            {decodeEntities(category.description) || `All ${decodeEntities(category.name).toLowerCase()} available at SaversBD.`}
+          </p>
+          <p className="mt-1 text-xs uppercase tracking-wide text-muted/80">
+            {result.total.toLocaleString("en-US")} {result.total === 1 ? "product" : "products"}
+          </p>
+        </div>
+        <SortSelect value={query.orderby ?? "date-desc"} />
+      </header>
+
+      {children.length ? (
+        <div className="-mx-1 mt-6 flex gap-2 overflow-x-auto px-1 pb-2">
+          {children.map((child) => (
+            <Link
+              key={child.id}
+              href={`/product-category/${child.slug}`}
+              className="shrink-0 rounded-full border border-line px-4 py-2 text-sm font-medium hover:border-ink"
+            >
+              {decodeEntities(child.name)}
+              <span className="ml-1.5 text-xs text-muted">{child.count}</span>
+            </Link>
+          ))}
+        </div>
+      ) : null}
+
+      <div className="mt-8">
+        {result.products.length ? (
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {result.products.map((product, index) => (
+              <ProductCard key={product.id} product={product} priority={index < 4} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="Nothing here yet"
+            message="This category has no products on sale right now. In the meantime, browse the full catalogue."
+          />
+        )}
+      </div>
+
+      <Pagination
+        currentPage={page}
+        totalPages={result.totalPages}
+        basePath={`/product-category/${slug.join("/")}`}
+        params={{ orderby: query.orderby }}
+      />
+    </div>
+  );
+}
