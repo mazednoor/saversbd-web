@@ -45,7 +45,7 @@ export function MobileBottomBar() {
     },
     {
       label: "Categories",
-      action: "menu",
+      href: "/categories",
       icon: (
         <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.7">
           <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
