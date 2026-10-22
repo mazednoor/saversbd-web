@@ -108,6 +108,7 @@ export default async function HomePage() {
                 alt="SaversBD featured collection"
                 fill
                 priority
+                unoptimized
                 quality={90}
                 sizes="(max-width: 1024px) 100vw, 46vw"
                 className="object-cover"
