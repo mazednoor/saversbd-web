@@ -70,14 +70,14 @@ export default async function CategoriesPage() {
                     className="object-contain p-4 transition duration-300 group-hover:scale-105"
                   />
                 ) : (
-                  <span className="grid h-full place-items-center text-[10px] text-muted">No image</span>
+                  <span className="grid h-full place-items-center text-[13px] text-muted">No image</span>
                 )}
               </span>
               <span className="flex flex-1 flex-col gap-0.5 p-3">
                 <span className="line-clamp-2 text-sm font-semibold leading-snug text-ink">
                   {department.name}
                 </span>
-                <span className="mt-auto pt-1 text-[11px] text-muted">{department.count} products</span>
+                <span className="mt-auto pt-1 text-[13px] text-muted">{department.count} products</span>
               </span>
             </Link>
           );
@@ -106,7 +106,7 @@ export default async function CategoriesPage() {
             <div key={group.name} className="mt-6">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-muted">{group.name}</h3>
-                <Link href={group.href} className="text-[11px] font-semibold text-brand hover:underline">
+                <Link href={group.href} className="text-[13px] font-semibold text-brand hover:underline">
                   View all {group.count}
                 </Link>
               </div>
@@ -130,14 +130,14 @@ export default async function CategoriesPage() {
                             className="object-contain p-4 transition duration-300 group-hover:scale-105"
                           />
                         ) : (
-                          <span className="grid h-full place-items-center text-[10px] text-muted">No image</span>
+                          <span className="grid h-full place-items-center text-[13px] text-muted">No image</span>
                         )}
                       </span>
                       <span className="flex flex-1 flex-col gap-0.5 p-3">
                         <span className="line-clamp-2 text-sm font-semibold leading-snug text-ink">
                           {decodeEntities(category.name)}
                         </span>
-                        <span className="mt-auto pt-1 text-[11px] text-muted">
+                        <span className="mt-auto pt-1 text-[13px] text-muted">
                           {category.count} products
                         </span>
                       </span>

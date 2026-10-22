@@ -36,7 +36,7 @@ export function PostCard({ post, priority = false }: { post: WPPost; priority?: 
       </Link>
 
       <div className="flex flex-1 flex-col gap-2 p-5">
-        <div className="flex items-center gap-2 text-[11px] uppercase tracking-wide text-muted">
+        <div className="flex items-center gap-2 text-[13px] uppercase tracking-wide text-muted">
           {category ? <span className="font-semibold text-brand">{category}</span> : null}
           <span aria-hidden="true">·</span>
           <time dateTime={post.date}>{formatDate(post.date)}</time>

@@ -47,7 +47,7 @@ export default async function BrandsPage() {
               ) : null}
             </span>
             <span className="text-sm font-semibold leading-tight text-ink">{brand.name}</span>
-            <span className="text-[11px] text-muted">{brand.count} products</span>
+            <span className="text-[13px] text-muted">{brand.count} products</span>
           </Link>
         ))}
       </div>

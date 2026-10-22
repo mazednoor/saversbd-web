@@ -74,7 +74,7 @@ export default async function BrandPage({ params, searchParams }: PageProps) {
 
       <header className="mt-4 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand">Shop by brand</p>
+          <p className="text-[13px] font-bold uppercase tracking-[0.14em] text-brand">Shop by brand</p>
           <h1 className="mt-1 text-3xl font-bold text-ink md:text-4xl">{brand.name}</h1>
           <p className="mt-2 text-sm text-muted">
             {total.toLocaleString("en-US")} {total === 1 ? "product" : "products"} · cash on delivery across

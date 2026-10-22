@@ -71,7 +71,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
       <article className="mx-auto mt-6 max-w-3xl">
         <header>
-          <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wide text-muted">
+          <div className="flex flex-wrap items-center gap-2 text-[13px] uppercase tracking-wide text-muted">
             {category ? <span className="font-semibold text-brand">{decodeEntities(category.name)}</span> : null}
             <span aria-hidden="true">·</span>
             <time dateTime={post.date}>{formatDate(post.date)}</time>

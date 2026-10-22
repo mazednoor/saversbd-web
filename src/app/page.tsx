@@ -55,7 +55,7 @@ export default async function HomePage() {
 
         <div className="container-page relative grid items-center gap-10 py-14 md:py-20 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[13px] font-semibold uppercase tracking-[0.16em] text-white/80">
               <span className="size-1.5 rounded-full bg-brand" />
               Authentic products · Bangladesh
             </p>
@@ -87,15 +87,15 @@ export default async function HomePage() {
 
             <dl className="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-white/10 pt-6">
               <div>
-                <dt className="text-[11px] uppercase tracking-wide text-white/50">Products</dt>
+                <dt className="text-[13px] uppercase tracking-wide text-white/50">Products</dt>
                 <dd className="mt-1 text-xl font-bold">{total.toLocaleString("en-US")}+</dd>
               </div>
               <div>
-                <dt className="text-[11px] uppercase tracking-wide text-white/50">Categories</dt>
+                <dt className="text-[13px] uppercase tracking-wide text-white/50">Categories</dt>
                 <dd className="mt-1 text-xl font-bold">{categories.length}</dd>
               </div>
               <div>
-                <dt className="text-[11px] uppercase tracking-wide text-white/50">Dhaka delivery</dt>
+                <dt className="text-[13px] uppercase tracking-wide text-white/50">Dhaka delivery</dt>
                 <dd className="mt-1 text-xl font-bold">24–48h</dd>
               </div>
             </dl>
@@ -122,7 +122,7 @@ export default async function HomePage() {
               </span>
               <div>
                 <p className="text-xs font-bold">Cash on delivery</p>
-                <p className="text-[11px] text-muted">Pay when your order arrives</p>
+                <p className="text-[13px] text-muted">Pay when your order arrives</p>
               </div>
             </div>
           </div>
@@ -225,7 +225,7 @@ export default async function HomePage() {
                     ) : null}
                   </span>
                   <span className="text-sm font-semibold leading-tight text-ink">{brand.name}</span>
-                  <span className="text-[11px] text-muted">{brand.count} products</span>
+                  <span className="text-[13px] text-muted">{brand.count} products</span>
                 </Link>
               ))}
             </div>

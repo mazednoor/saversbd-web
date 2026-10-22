@@ -100,7 +100,7 @@ export default async function ProductPage({ params }: PageProps) {
           {primaryCategory ? (
             <Link
               href={categoryHref(primaryCategory.slug)}
-              className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand hover:underline"
+              className="text-[13px] font-bold uppercase tracking-[0.14em] text-brand hover:underline"
             >
               {decodeEntities(primaryCategory.name)}
             </Link>

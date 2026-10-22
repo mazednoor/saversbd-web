@@ -23,6 +23,10 @@
 
 @layer base {
   html {
+    /* Larger base size — every rem-based utility (text-sm, text-base, spacing,
+       the Tailwind Typography scale) scales with it, so the whole site grows
+       proportionally instead of being patched class by class. */
+    font-size: 18px;
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }

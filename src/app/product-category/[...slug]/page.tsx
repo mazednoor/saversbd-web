@@ -290,14 +290,14 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
                         className="object-contain p-4 transition duration-300 group-hover:scale-105"
                       />
                     ) : (
-                      <span className="grid h-full place-items-center text-[10px] text-muted">No image</span>
+                      <span className="grid h-full place-items-center text-[13px] text-muted">No image</span>
                     )}
                   </span>
                   <span className="flex flex-1 flex-col gap-0.5 p-3">
                     <span className="line-clamp-2 text-sm font-semibold leading-snug text-ink">
                       {item.name}
                     </span>
-                    <span className="mt-auto pt-1 text-[11px] text-muted">{item.count} products</span>
+                    <span className="mt-auto pt-1 text-[13px] text-muted">{item.count} products</span>
                   </span>
                 </Link>
               );

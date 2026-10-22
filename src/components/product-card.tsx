@@ -26,22 +26,22 @@ export function ProductCard({ product, priority = false }: { product: StoreProdu
 
         <div className="absolute left-3 top-3 flex flex-col gap-1.5">
           {discount ? (
-            <span className="rounded-full bg-brand px-2.5 py-1 text-[11px] font-bold text-white">-{discount}%</span>
+            <span className="rounded-full bg-brand px-2.5 py-1 text-[13px] font-bold text-white">-{discount}%</span>
           ) : null}
           {soldOut ? (
-            <span className="rounded-full bg-ink px-2.5 py-1 text-[11px] font-bold text-white">Sold out</span>
+            <span className="rounded-full bg-ink px-2.5 py-1 text-[13px] font-bold text-white">Sold out</span>
           ) : null}
         </div>
       </Link>
 
       <div className="flex flex-1 flex-col gap-2 p-4">
         {product.categories?.length ? (
-          <p className="text-[11px] font-medium uppercase tracking-wide text-muted/80">
+          <p className="text-[13px] font-medium uppercase tracking-wide text-muted/80">
             {decodeEntities(product.categories[0].name)}
           </p>
         ) : null}
 
-        <h3 className="line-clamp-2 text-[15px] font-medium leading-snug text-ink">
+        <h3 className="line-clamp-2 text-[16px] font-medium leading-snug text-ink">
           <Link href={`/product/${product.slug}`} className="hover:text-brand">
             {decodeEntities(product.name)}
           </Link>
