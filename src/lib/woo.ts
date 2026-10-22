@@ -226,6 +226,28 @@ export async function getAllProducts(): Promise<StoreProduct[]> {
   }
 }
 
+/**
+ * Picks a cover image for every category from the catalogue, so category
+ * tiles can be illustrated without one API call per category.
+ */
+export function buildCategoryCovers(
+  products: StoreProduct[],
+): Map<number, { src: string; name: string }> {
+  const covers = new Map<number, { src: string; name: string }>();
+
+  for (const product of products) {
+    const image = product.images?.[0]?.src;
+    if (!image) continue;
+    for (const category of product.categories ?? []) {
+      if (!covers.has(category.id)) {
+        covers.set(category.id, { src: image, name: product.name });
+      }
+    }
+  }
+
+  return covers;
+}
+
 export async function getStoreCurrency(): Promise<StorePrice | null> {
   const { products } = await getProducts({ perPage: 1 });
   return products[0]?.prices ?? null;
