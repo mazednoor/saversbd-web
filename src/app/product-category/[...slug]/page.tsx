@@ -142,6 +142,10 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
     .filter((item) => item.count > 0)
     .sort((a, b) => b.count - a.count);
 
+  // A category that has subcategories is a landing page: it shows the
+  // subcategory shelf, not a duplicate product list.
+  const showTiles = subcategories.length > 0;
+
   const brandOptions: BrandOption[] = buildBrands(catalogue).map((item) => ({
     slug: item.slug,
     name: item.name,
@@ -188,13 +192,15 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
             {decodeEntities(category.description) || `All ${decodeEntities(category.name).toLowerCase()} available at SaversBD.`}
           </p>
           <p className="mt-1 text-xs uppercase tracking-wide text-muted/80">
-            {result.total.toLocaleString("en-US")} {result.total === 1 ? "product" : "products"}
+            {showTiles
+              ? `${subcategories.length} subcategories · ${result.total.toLocaleString("en-US")} products`
+              : `${result.total.toLocaleString("en-US")} ${result.total === 1 ? "product" : "products"}`}
           </p>
         </div>
-        <SortSelect value={query.orderby ?? "date-desc"} />
+        {showTiles ? null : <SortSelect value={query.orderby ?? "date-desc"} />}
       </header>
 
-      {siblings.length ? (
+      {!showTiles && siblings.length ? (
         <div className="-mx-1 mt-6 flex gap-2 overflow-x-auto px-1 pb-2">
           {siblings.map((sibling) => (
             <Link
@@ -254,6 +260,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
         </section>
       ) : null}
 
+      {showTiles ? null : (
       <div className="mt-8 grid gap-8 lg:grid-cols-[16rem_1fr]">
         {/* Filters — sidebar on desktop, collapsible panel on mobile */}
         <aside className="lg:sticky lg:top-32 lg:self-start">
@@ -330,6 +337,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           />
         </div>
       </div>
+      )}
     </div>
   );
 }
