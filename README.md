@@ -82,6 +82,17 @@ npm run dev                    # http://localhost:3000
 
    Publishing a product/post/page now clears the matching Next.js cache immediately. Without it,
    content refreshes within `NEXT_PUBLIC_REVALIDATE` seconds.
+4. **Category tree cleanup** (optional but recommended) — the WooCommerce taxonomy shipped with
+   ~299 terms, 174 of them empty, plus ~32 near-duplicate categories (*Creams/Cream*,
+   *Hair Care/Hair care*, *Face Wash/Facewash*…). Two MU plugins fix that:
+   - `wordpress/saversbd-category-cleanup.php` — merges duplicates, fixes typos, deletes empty
+     categories. `wp saversbd cleanup categories --dry-run` first, then `--apply`.
+   - `wordpress/saversbd-category-reorganiser.php` — re-parents everything into the same
+     7-department structure the storefront uses. `wp saversbd categories reorganise --apply`.
+
+   Both are safe by default (dry run) and never delete products — they move them.
+   Old category URLs keep working: the frontend 308-redirects merged slugs to their new home
+   (`src/lib/category-aliases.ts`).
 4. **LiteSpeed Cache**: exclude the Store API from *page* caching only if you notice stale stock
    (`/wp-json/wc/store/v1/cart*`). The read-only product endpoints are safe to cache.
 5. **Recommended domain layout** (best for SEO):

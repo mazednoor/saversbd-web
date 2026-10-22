@@ -29,35 +29,35 @@ function saversbd_taxonomy_map(): array {
 		'skincare-beauty'        => array(
 			'name'   => 'Skincare & Beauty',
 			'groups' => array(
-				'Skin Care'             => array( 'skin-care', 'serums', 'sensitive-skin', 'skin-lightening', 'acne-treament', 'dry-skin', 'skin', 'natural', 'pore-care', 'oil-control', 'oil-contro', 'skin-relief', 'soothing' ),
-				'Face Care'             => array( 'face', 'facewash', 'face-wash', 'face-cleansers', 'cleanser', 'cleanser-water', 'cleansing-gel', 'cleansing-milk', 'cleansing-oil-cleanser', 'micellar-water', 'foaming-gel', 'foaming-oil', 'facial-scrub', 'scrubs', 'makeup', 'bioderma', 'eye-care', 'eye-repair', 'mask-peels', 'masks-peels', 'face-mask', 'face-serum', 'facial-oil' ),
-				'Creams & Moisturisers'  => array( 'cream', 'creams', 'cream-moisturizers', 'lotion', 'lotions-creams', 'face-cream', 'day-night-cream', 'day-cream', 'night-cream', 'moisturizer', 'moisturizing-cream', 'moisturising-care', 'moisturising-cream', 'moisturizer-gel', 'nourishing-cream', 'daily-moisturizing', 'repairing-and-protective-cream', 'ultra-nourishing-balm', 'ultra-nourishing-cream', 'ultra-soothing-balm', 'gel', 'body-cream', 'body-lotion' ),
-				'Body Care & Bath'      => array( 'body', 'body-bath', 'body-care', 'body-wash', 'body-spray', 'body-mist-spray', 'bath-shower', 'bath-time', 'bath-skin', 'shower-cream', 'shower-gels-body-wash', 'loofahs-sponges', 'scrubs-exfoliants' ),
+				'Skin Care'             => array( 'skin-care', 'serums', 'sensitive-skin', 'skin-lightening', 'acne-treament', 'dry-skin', 'natural', 'pore-care', 'oil-control', 'skin-relief', 'soothing' ),
+				'Face Care'             => array( 'face', 'facewash', 'cleanser', 'cleanser-water', 'cleansing-gel', 'cleansing-milk', 'cleansing-oil-cleanser', 'micellar-water', 'foaming-oil', 'makeup', 'eye-care', 'eye-repair', 'face-mask', 'face-serum', 'facial-oil' ),
+				'Creams & Moisturisers'  => array( 'cream', 'lotion', 'lotions-creams', 'face-cream', 'day-night-cream', 'day-cream', 'night-cream', 'moisturizer', 'moisturising-cream', 'moisturizer-gel', 'nourishing-cream', 'repairing-and-protective-cream', 'ultra-nourishing-balm', 'ultra-nourishing-cream', 'ultra-soothing-balm', 'body-cream', 'body-lotion' ),
+				'Body Care & Bath'      => array( 'body-care', 'body-wash', 'body-mist-spray', 'bath-time', 'shower-cream', 'scrubs-exfoliants' ),
 				'Sun Protection'         => array( 'sun-care', 'sun-protection', 'sunscreen', 'cold-protection' ),
-				'Personal Care'          => array( 'personal-care', 'men-care' ),
+				'Personal Care'          => array( 'personal-care' ),
 			),
 		),
 		'hair-care'               => array(
 			'name'   => 'Hair Care',
 			'groups' => array(
-				'Shampoo'            => array( 'shampoo', 'shampoo-2' ),
-				'Conditioner'        => array( 'conditioner' ),
-				'Styling & Treatment' => array( 'hair-oil', 'hair-mask', 'hair-color', 'hair-care-2', 'hair-care-3' ),
+				'Shampoo'             => array( 'shampoo' ),
+				'Conditioner'         => array( 'conditioner' ),
+				'Styling & Treatment' => array( 'hair-oil', 'hair-mask', 'hair-color' ),
 			),
 		),
 		'baby-mother'             => array(
 			'name'   => 'Baby & Mother',
 			'groups' => array(
-				'Baby Essentials' => array( 'baby', 'baby-care', 'baby-products', 'baby-body-care', 'baby-skin', 'mom-baby' ),
-				'Diapers'         => array( 'baby-diapers', 'imported-diapers' ),
-				'Bath & Skin'     => array( 'baby-bath-wash', 'baby-oil', 'baby-shampoo', 'baby-wash-shampoo', 'baby-lotion' ),
+				'Baby Essentials' => array( 'baby-care', 'baby-products', 'baby-body-care', 'baby-skin', 'mom-baby' ),
+				'Diapers'         => array( 'baby-diapers' ),
+				'Bath & Skin'     => array( 'baby-bath-wash', 'baby-oil', 'baby-shampoo', 'baby-lotion' ),
 			),
 		),
 		'deodorants-fragrance'     => array(
 			'name'   => 'Deodorants & Fragrance',
 			'groups' => array(
 				'Deodorants' => array( 'deodorant', 'deodorant-stick', 'deodorants-roll-ons' ),
-				'Fragrance'  => array( 'perfume', 'for-her', 'for-him', 'body-spray', 'body-mist-spray' ),
+				'Fragrance'  => array( 'perfume', 'for-her', 'for-him' ),
 			),
 		),
 		'toys-play'               => array(

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Pagination } from "@/components/pagination";
 import { ProductCard } from "@/components/product-card";
 import { SortSelect } from "@/components/sort-select";
 import { EmptyState } from "@/components/ui";
 import { absoluteUrl, decodeEntities, excerptFrom } from "@/lib/format";
+import { CATEGORY_ALIASES } from "@/lib/category-aliases";
 import { buildTaxonomy, findPlacement } from "@/lib/taxonomy";
 import {
   getCategoryBySlug,
@@ -37,6 +38,14 @@ type PageProps = {
 /** Resolves /product-category/toys and /product-category/toys/0-12m alike. */
 async function resolveCategory(segments: string[]) {
   const slug = segments[segments.length - 1];
+
+  // Categories that were merged away still have live URLs — send them to the
+  // category that absorbed them.
+  const alias = CATEGORY_ALIASES[slug];
+  if (alias) {
+    permanentRedirect(`/product-category/${alias}`);
+  }
+
   const category = await getCategoryBySlug(slug);
   if (!category) return null;
   // "Uncategorized" is a WordPress default bucket, not a shoppable department.
