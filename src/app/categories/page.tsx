@@ -1,102 +1,77 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { buildTaxonomy } from "@/lib/taxonomy";
 import { decodeEntities } from "@/lib/format";
 import { getCategories } from "@/lib/woo";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "All categories",
-  description: "Browse every department at SaversBD — baby care, skincare, toys, household and more.",
+  title: "All departments",
+  description:
+    "Browse every department at SaversBD — skincare and beauty, baby and mother, hair care, deodorants and fragrance, toys, health and grooming.",
 };
 
 export default async function CategoriesPage() {
   const categories = await getCategories();
-  const active = categories.filter(
-    (category) => category.count > 0 && category.slug !== "uncategorized",
-  );
-  const parents = active.filter((category) => category.parent === 0).sort((a, b) => b.count - a.count);
-  const childrenOf = (parentId: number) =>
-    active.filter((category) => category.parent === parentId).sort((a, b) => b.count - a.count);
-
-  // Categories whose parent is not in the fetched list still deserve a home.
-  const orphaned = active.filter(
-    (category) => category.parent !== 0 && !active.some((parent) => parent.id === category.parent),
-  );
+  const departments = buildTaxonomy(categories);
 
   return (
     <div className="container-page py-8">
-      <Breadcrumbs items={[{ label: "Categories" }]} />
+      <Breadcrumbs items={[{ label: "Departments" }]} />
 
       <header className="mt-4 max-w-2xl">
-        <h1 className="text-3xl font-bold text-ink md:text-4xl">All categories</h1>
+        <h1 className="text-3xl font-bold text-ink md:text-4xl">All departments</h1>
         <p className="mt-2 text-sm text-muted">
-          {active.length} departments and collections, from imported diapers to skincare and toys.
+          {departments.length} departments, {categories.filter((c) => c.count > 0 && c.slug !== "uncategorized").length}{" "}
+          categories — from skincare to toys, all with cash on delivery across Bangladesh.
         </p>
       </header>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {parents.map((parent) => {
-          const children = childrenOf(parent.id);
-          return (
-            <section key={parent.id} className="rounded-2xl border border-line bg-white p-5">
-              <div className="flex items-baseline justify-between gap-2">
-                <Link
-                  href={`/product-category/${parent.slug}`}
-                  className="font-display text-lg font-semibold text-ink hover:text-brand"
-                >
-                  {decodeEntities(parent.name)}
-                </Link>
-                <span className="text-xs text-muted">{parent.count}</span>
-              </div>
+      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        {departments.map((department) => (
+          <section key={department.key} className="rounded-2xl border border-line bg-white p-5">
+            <div className="flex items-baseline justify-between gap-3">
+              <Link
+                href={department.href}
+                className="font-display text-lg font-semibold text-ink hover:text-brand"
+              >
+                {department.name}
+              </Link>
+              <span className="shrink-0 text-xs text-muted">{department.count} products</span>
+            </div>
 
-              {children.length ? (
-                <ul className="mt-3 flex flex-wrap gap-1.5">
-                  {children.slice(0, 8).map((child) => (
-                    <li key={child.id}>
-                      <Link
-                        href={`/product-category/${child.slug}`}
-                        className="inline-block rounded-full bg-haze px-2.5 py-1 text-xs text-muted transition hover:bg-mist hover:text-ink"
-                      >
-                        {decodeEntities(child.name)}
-                      </Link>
-                    </li>
-                  ))}
-                  {children.length > 8 ? (
-                    <li>
-                      <Link
-                        href={`/product-category/${parent.slug}`}
-                        className="inline-block rounded-full px-2.5 py-1 text-xs font-semibold text-brand"
-                      >
-                        +{children.length - 8} more
-                      </Link>
-                    </li>
-                  ) : null}
-                </ul>
-              ) : null}
-            </section>
-          );
-        })}
+            <div className="mt-4 space-y-4">
+              {department.groups.map((group) => (
+                <div key={group.name}>
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
+                      {group.name}
+                    </p>
+                    <Link href={group.href} className="text-[11px] font-semibold text-brand hover:underline">
+                      View all
+                    </Link>
+                  </div>
+                  <ul className="mt-1.5 flex flex-wrap gap-1.5">
+                    {group.categories.map((category) => (
+                      <li key={category.id}>
+                        <Link
+                          href={`/product-category/${category.slug}`}
+                          className="inline-block rounded-full bg-haze px-2.5 py-1 text-xs text-muted transition hover:bg-mist hover:text-ink"
+                        >
+                          {decodeEntities(category.name)}
+                          <span className="ml-1 text-[10px] text-muted/70">{category.count}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        ))}
       </div>
-
-      {orphaned.length ? (
-        <section className="mt-10">
-          <h2 className="text-xl font-bold text-ink">More collections</h2>
-          <ul className="mt-3 flex flex-wrap gap-1.5">
-            {orphaned.map((category) => (
-              <li key={category.id}>
-                <Link
-                  href={`/product-category/${category.slug}`}
-                  className="inline-block rounded-full border border-line px-3 py-1.5 text-xs hover:border-ink"
-                >
-                  {decodeEntities(category.name)}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
     </div>
   );
 }

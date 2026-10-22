@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { buildTaxonomy } from "@/lib/taxonomy";
 import { decodeEntities } from "@/lib/format";
 import { WP } from "@/lib/site";
 import type { StoreCategory } from "@/lib/woo";
@@ -14,18 +15,10 @@ interface AllCategoriesDropdownProps {
 
 export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps) {
   const [open, setOpen] = useState(false);
-  const [flyout, setFlyout] = useState<number | null>(null);
+  const [department, setDepartment] = useState<string | null>(null);
 
-  const childrenOf = (parentId: number) =>
-    categories
-      .filter((c) => c.parent === parentId && c.count > 0)
-      .sort((a, b) => b.count - a.count);
-
-  // Top-level parents are those with parent === 0
-  const parents = categories
-    .filter((c) => c.parent === 0 && c.count > 0 && c.slug !== "uncategorized")
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 10);
+  const departments = buildTaxonomy(categories);
+  const active = departments.find((item) => item.key === department) ?? null;
 
   return (
     <div
@@ -33,7 +26,7 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => {
         setOpen(false);
-        setFlyout(null);
+        setDepartment(null);
       }}
     >
       <button
@@ -48,82 +41,72 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 w-72 rounded-xl border border-line bg-white p-3 shadow-xl">
-          <Link
-            href="/shop"
-            className="mb-1 block rounded-lg px-3 py-2 text-sm font-semibold"
-            style={{ color: BLUE }}
-          >
-            All products →
-          </Link>
-          <div className="my-1 h-px bg-line" />
-          {parents.map((category) => {
-            const children = childrenOf(category.id);
-            return (
-              <div
-                key={category.id}
-                className="group/sub relative"
-                onMouseEnter={() => setFlyout(category.id)}
-                onMouseLeave={() => setFlyout(null)}
-              >
-                <Link
-                  href={`/product-category/${category.slug}`}
-                  className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold text-ink hover:bg-haze"
-                >
-                  <span>{decodeEntities(category.name)}</span>
-                  <span className="flex items-center gap-1 text-xs text-muted">
-                    {category.count}
-                    {children.length > 0 && (
-                      <svg viewBox="0 0 24 24" className="size-3" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="m9 6 6 6-6 6" strokeLinecap="round" />
-                      </svg>
-                    )}
-                  </span>
-                </Link>
-                {children.length > 0 && flyout === category.id && (
-                  /* Offset wrapper: the transparent margin/ padding keeps the
-                     pointer "inside" the row, so the flyout does not close
-                     while the cursor travels across the gap — and it does
-                     not overlap the parent panel. */
-                  /* The wrapper's transparent padding bridges the gap so the
-                     flyout stays open while the cursor travels across it, and
-                     the panel itself has no left border/rounded corner, so it
-                     reads as one continuous panel with the category list. */
-                  <div className="absolute left-full top-0 z-50 pl-[11px]">
-                    <div className="w-56 rounded-r-xl border-y border-r border-line bg-white p-3 shadow-[10px_0_20px_-12px_rgba(4,0,55,0.45)]">
-                      {children.map((child) => (
-                        <Link
-                          key={child.id}
-                          href={`/product-category/${child.slug}`}
-                          className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold text-ink hover:bg-haze"
-                        >
-                          <span>{decodeEntities(child.name)}</span>
-                          <span className="text-xs text-muted">{child.count}</span>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-          <div className="my-1 h-px bg-line" />
+        <div className="absolute left-0 top-full z-50 w-64 rounded-xl border border-line bg-white p-3 shadow-xl">
           <Link
             href="/categories"
-            className="block rounded-lg px-3 py-2 text-sm font-semibold"
+            className="mb-1 block rounded-lg px-3 py-2 text-sm font-semibold"
             style={{ color: BLUE }}
           >
             All departments →
           </Link>
+          <div className="my-1 h-px bg-line" />
+
+          {departments.map((item) => (
+            <div
+              key={item.key}
+              className="group/sub relative"
+              onMouseEnter={() => setDepartment(item.key)}
+            >
+              <Link
+                href={item.href}
+                className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold text-ink hover:bg-haze"
+              >
+                <span>{item.name}</span>
+                <span className="flex items-center gap-1 text-xs text-muted">
+                  {item.count}
+                  <svg viewBox="0 0 24 24" className="size-3" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="m9 6 6 6-6 6" strokeLinecap="round" />
+                  </svg>
+                </span>
+              </Link>
+
+              {active?.key === item.key && (
+                /* Transparent padding bridges the gap so the panel stays open
+                   while the cursor travels across it, and the panel has no
+                   left border so it reads as one continuous surface. */
+                <div className="absolute left-full top-0 z-50 pl-[11px]">
+                  <div className="max-h-[70vh] w-[30rem] overflow-y-auto rounded-r-xl border-y border-r border-line bg-white p-4 shadow-[10px_0_20px_-12px_rgba(4,0,55,0.45)]">
+                    {item.groups.map((group) => (
+                      <div key={group.name} className="mb-4 last:mb-0">
+                        <p className="mb-1.5 px-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
+                          {group.name}
+                        </p>
+                        <div className="grid grid-cols-2 gap-x-3">
+                          {group.categories.map((category) => (
+                            <Link
+                              key={category.id}
+                              href={`/product-category/${category.slug}`}
+                              className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-sm text-ink hover:bg-haze"
+                            >
+                              <span className="truncate">{decodeEntities(category.name)}</span>
+                              <span className="text-xs text-muted">{category.count}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>
   );
 }
 
-interface EServicesDropdownProps {}
-
-export function EServicesDropdown({}: EServicesDropdownProps) {
+export function EServicesDropdown() {
   const [open, setOpen] = useState(false);
   return (
     <div

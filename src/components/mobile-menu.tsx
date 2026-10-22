@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SearchAutosuggest } from "./search-autosuggest";
 import { useMobileMenu } from "./mobile-menu-context";
+import { buildTaxonomy } from "@/lib/taxonomy";
 import { decodeEntities } from "@/lib/format";
 import { WP } from "@/lib/site";
 import type { StoreCategory } from "@/lib/woo";
@@ -12,9 +13,10 @@ const BLUE = "#2060a0";
 
 export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
   const { open, setOpen } = useMobileMenu();
-  const [expanded, setExpanded] = useState<number | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   const close = () => setOpen(false);
+  const departments = buildTaxonomy(categories);
 
   // Lock page scrolling while the drawer is open.
   useEffect(() => {
@@ -34,14 +36,6 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, []);
-
-  const parents = categories
-    .filter((c) => c.parent === 0 && c.count > 0 && c.slug !== "uncategorized")
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 14);
-
-  const childrenOf = (parentId: number) =>
-    categories.filter((c) => c.parent === parentId && c.count > 0).sort((a, b) => b.count - a.count);
 
   return (
     <>
@@ -120,55 +114,59 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
               <div className="my-3 h-px bg-line" />
 
               <p className="px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
-                All categories
+                Departments
               </p>
 
               <div className="space-y-0.5">
-                {parents.map((category) => {
-                  const children = childrenOf(category.id);
-                  const isOpen = expanded === category.id;
+                {departments.map((department) => {
+                  const isOpen = expanded === department.key;
                   return (
-                    <div key={category.id}>
+                    <div key={department.key}>
                       <div className="flex items-center gap-1">
                         <Link
-                          href={`/product-category/${category.slug}`}
+                          href={department.href}
                           onClick={close}
-                          className="min-w-0 flex-1 rounded-xl px-3 py-2.5 text-sm text-ink hover:bg-haze"
+                          className="min-w-0 flex-1 rounded-xl px-3 py-2.5 text-sm font-semibold text-ink hover:bg-haze"
                         >
-                          {decodeEntities(category.name)}
+                          {department.name}
                         </Link>
-                        {children.length > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => setExpanded(isOpen ? null : category.id)}
-                            aria-label={`Show ${decodeEntities(category.name)} subcategories`}
-                            aria-expanded={isOpen}
-                            className="grid size-9 shrink-0 place-items-center rounded-lg text-muted hover:bg-haze"
+                        <button
+                          type="button"
+                          onClick={() => setExpanded(isOpen ? null : department.key)}
+                          aria-label={`Show ${department.name} categories`}
+                          aria-expanded={isOpen}
+                          className="grid size-9 shrink-0 place-items-center rounded-lg text-muted hover:bg-haze"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            className={`size-4 transition-transform ${isOpen ? "rotate-90" : ""}`}
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
                           >
-                            <svg
-                              viewBox="0 0 24 24"
-                              className={`size-4 transition-transform ${isOpen ? "rotate-90" : ""}`}
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <path d="m9 6 6 6-6 6" strokeLinecap="round" />
-                            </svg>
-                          </button>
-                        )}
+                            <path d="m9 6 6 6-6 6" strokeLinecap="round" />
+                          </svg>
+                        </button>
                       </div>
 
-                      {isOpen && children.length > 0 && (
-                        <div className="mb-1 ml-3 border-l border-line pl-2">
-                          {children.map((child) => (
-                            <Link
-                              key={child.id}
-                              href={`/product-category/${child.slug}`}
-                              onClick={close}
-                              className="block rounded-lg px-3 py-2 text-sm text-muted hover:bg-haze hover:text-ink"
-                            >
-                              {decodeEntities(child.name)}
-                            </Link>
+                      {isOpen && (
+                        <div className="mb-2 ml-2 border-l border-line pl-3">
+                          {department.groups.map((group) => (
+                            <div key={group.name} className="mb-2 last:mb-0">
+                              <p className="px-2 pb-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
+                                {group.name}
+                              </p>
+                              {group.categories.map((category) => (
+                                <Link
+                                  key={category.id}
+                                  href={`/product-category/${category.slug}`}
+                                  onClick={close}
+                                  className="block rounded-lg px-2 py-1.5 text-sm text-muted hover:bg-haze hover:text-ink"
+                                >
+                                  {decodeEntities(category.name)}
+                                </Link>
+                              ))}
+                            </div>
                           ))}
                         </div>
                       )}

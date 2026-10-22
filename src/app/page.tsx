@@ -4,7 +4,8 @@ import { ProductCard } from "@/components/product-card";
 import { SectionHeading } from "@/components/ui";
 import { decodeEntities } from "@/lib/format";
 import { catchyTitle } from "@/lib/catchy";
-import { getCategories, getCategoriesWithImages, getProducts, getTopCategories } from "@/lib/woo";
+import { buildTaxonomy } from "@/lib/taxonomy";
+import { getCategories, getCategoriesWithImages, getProducts } from "@/lib/woo";
 import { WP, WP_URL } from "@/lib/site";
 
 export const revalidate = 600;
@@ -13,13 +14,12 @@ const HERO_IMAGE =
   process.env.NEXT_PUBLIC_HERO_IMAGE ?? `${WP_URL}/wp-content/uploads/2025/01/slider-1-scaled.webp`;
 
 export default async function HomePage() {
-  const [{ products: popular, total }, { products: saleProducts }, categoryTiles, categories, menuCategories] =
+  const [{ products: popular, total }, { products: saleProducts }, categoryTiles, categories] =
     await Promise.all([
       getProducts({ perPage: 24, orderby: "popularity" }),
       getProducts({ perPage: 12, onSale: true, orderby: "popularity" }),
       getCategoriesWithImages(8),
       getCategories(),
-      getTopCategories(10),
     ]);
 
   // A handful of catalogue entries are "contact for price" — keep the
@@ -28,15 +28,16 @@ export default async function HomePage() {
   const bestSellers = priced(popular).slice(0, 8);
   const deals = priced(saleProducts).slice(0, 4);
 
-  // One product row per department listed in the main menu.
-  const categorySections = await Promise.all(
-    menuCategories.map(async (category) => {
+  // One product row per department (the curated 7-department taxonomy).
+  const departments = buildTaxonomy(categories);
+  const departmentSections = await Promise.all(
+    departments.map(async (department) => {
       const { products } = await getProducts({
-        category: category.id,
+        category: department.categoryIds,
         perPage: 8,
         orderby: "popularity",
       });
-      return { category, products: priced(products).slice(0, 8) };
+      return { department, products: priced(products).slice(0, 8) };
     }),
   );
 
@@ -213,16 +214,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* One product row per main-menu category */}
-      {categorySections.map(
-        ({ category, products }, index) =>
+      {/* One product row per department */}
+      {departmentSections.map(
+        ({ department, products }, index) =>
           products.length > 0 && (
-            <section key={category.id} className={`section ${index % 2 === 0 ? "bg-haze" : ""}`}>
+            <section key={department.key} className={`section ${index % 2 === 0 ? "bg-haze" : ""}`}>
               <div className="container-page">
                 <SectionHeading
-                  title={catchyTitle(category.name, category.slug)}
-                  href={`/product-category/${category.slug}`}
-                  linkLabel={`View all ${category.count} products`}
+                  title={department.catchy || catchyTitle(department.name)}
+                  href={department.href}
+                  linkLabel={`View all ${department.count} products`}
                 />
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                   {products.map((product) => (

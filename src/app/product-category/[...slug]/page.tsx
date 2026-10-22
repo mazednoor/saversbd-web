@@ -7,6 +7,7 @@ import { ProductCard } from "@/components/product-card";
 import { SortSelect } from "@/components/sort-select";
 import { EmptyState } from "@/components/ui";
 import { absoluteUrl, decodeEntities, excerptFrom } from "@/lib/format";
+import { buildTaxonomy, findPlacement } from "@/lib/taxonomy";
 import {
   getCategoryBySlug,
   getCategories,
@@ -80,20 +81,33 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   const page = Math.max(1, Number(query.page) || 1);
   const sort = SORTS[query.orderby ?? "date-desc"] ?? SORTS["date-desc"];
 
-  const [children, result] = await Promise.all([
+  const [children, result, allCategories] = await Promise.all([
     getChildCategories(category.id),
     getProducts({ page, perPage: PER_PAGE, category: category.id, ...sort }),
+    getCategories(),
   ]);
+
+  // Where this category sits in the curated department taxonomy.
+  const taxonomy = buildTaxonomy(allCategories);
+  const placement = findPlacement(taxonomy, category.slug);
+  const siblings = placement
+    ? placement.group.categories.filter((item) => item.slug !== category.slug)
+    : children;
+
+  const crumbs = [
+    { label: "Shop", href: "/shop" },
+    ...(placement
+      ? [
+          { label: placement.department.name, href: placement.department.href },
+          { label: placement.group.name, href: placement.group.href },
+        ]
+      : chain.slice(0, -1).map((item) => ({ label: decodeEntities(item.name), href: `/product-category/${item.slug}` }))),
+    { label: decodeEntities(category.name) },
+  ];
 
   return (
     <div className="container-page py-8">
-      <Breadcrumbs
-        items={[
-          { label: "Shop", href: "/shop" },
-          ...chain.slice(0, -1).map((item) => ({ label: decodeEntities(item.name), href: `/product-category/${item.slug}` })),
-          { label: decodeEntities(category.name) },
-        ]}
-      />
+      <Breadcrumbs items={crumbs} />
 
       <header className="mt-4 flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -108,16 +122,18 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
         <SortSelect value={query.orderby ?? "date-desc"} />
       </header>
 
-      {children.length ? (
+      {siblings.length ? (
         <div className="-mx-1 mt-6 flex gap-2 overflow-x-auto px-1 pb-2">
-          {children.map((child) => (
+          {siblings.map((sibling) => (
             <Link
-              key={child.id}
-              href={`/product-category/${child.slug}`}
-              className="shrink-0 rounded-full border border-line px-4 py-2 text-sm font-medium hover:border-ink"
+              key={sibling.id}
+              href={`/product-category/${sibling.slug}`}
+              className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium hover:border-ink ${
+                sibling.slug === category.slug ? "border-ink bg-ink text-white" : "border-line"
+              }`}
             >
-              {decodeEntities(child.name)}
-              <span className="ml-1.5 text-xs text-muted">{child.count}</span>
+              {decodeEntities(sibling.name)}
+              <span className="ml-1.5 text-xs opacity-70">{sibling.count}</span>
             </Link>
           ))}
         </div>

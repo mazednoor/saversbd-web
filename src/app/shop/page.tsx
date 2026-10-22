@@ -6,7 +6,8 @@ import { SortSelect } from "@/components/sort-select";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { EmptyState } from "@/components/ui";
 import { decodeEntities } from "@/lib/format";
-import { getCategories, getCategoryBySlug, getProducts, type ProductQuery } from "@/lib/woo";
+import { buildTaxonomy } from "@/lib/taxonomy";
+import { getCategories, getProducts, type ProductQuery } from "@/lib/woo";
 
 export const metadata: Metadata = {
   title: "Shop all products",
@@ -38,32 +39,42 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
   const onSale = params.on_sale === "1";
   const search = params.q?.trim();
 
-  const activeCategory = params.category ? await getCategoryBySlug(params.category) : null;
+  const categories = await getCategories();
+  const departments = buildTaxonomy(categories);
 
-  const [categories, result] = await Promise.all([
-    getCategories(),
-    getProducts({
-      page,
-      perPage: PER_PAGE,
-      search,
-      onSale,
-      category: activeCategory?.id,
-      ...sort,
-    }),
-  ]);
+  // `category` accepts one slug or a comma-separated list of slugs
+  // (used by the department and group links).
+  const slugs = (params.category ?? "").split(",").map((slug) => slug.trim()).filter(Boolean);
+  const selected = slugs
+    .map((slug) => categories.find((category) => category.slug === slug))
+    .filter((category): category is NonNullable<typeof category> => Boolean(category));
 
-  const topCategories = categories
-    .filter((category) => category.parent === 0 && category.count > 0)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 12);
+  const matchedDepartment = departments.find((department) =>
+    department.groups.some((group) =>
+      group.categories.every((category) => slugs.includes(category.slug)),
+    ),
+  );
+
+  const result = await getProducts({
+    page,
+    perPage: PER_PAGE,
+    search,
+    onSale,
+    category: selected.length ? selected.map((category) => category.id) : undefined,
+    ...sort,
+  });
 
   const heading = search
     ? `Search results for “${search}”`
     : onSale
       ? "Deals & offers"
-      : activeCategory
-        ? decodeEntities(activeCategory.name)
-        : "All products";
+      : matchedDepartment
+        ? matchedDepartment.name
+        : selected.length === 1
+          ? decodeEntities(selected[0].name)
+          : selected.length > 1
+            ? `${selected.length} categories`
+            : "All products";
 
   const keep = {
     category: params.category,
@@ -74,20 +85,27 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
 
   return (
     <div className="container-page py-8">
-      <Breadcrumbs items={[{ label: "Shop", href: "/shop" }, ...(activeCategory ? [{ label: decodeEntities(activeCategory.name) }] : [])]} />
+      <Breadcrumbs
+        items={[
+          { label: "Shop", href: "/shop" },
+          ...(matchedDepartment ? [{ label: matchedDepartment.name, href: matchedDepartment.href }] : []),
+        ]}
+      />
 
       <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-ink md:text-4xl">{heading}</h1>
           <p className="mt-2 text-sm text-muted">
             {result.total.toLocaleString("en-US")} {result.total === 1 ? "product" : "products"}
-            {activeCategory?.description ? ` · ${activeCategory.description}` : ""}
+            {selected.length === 1 && selected[0].description
+              ? ` · ${decodeEntities(selected[0].description)}`
+              : ""}
           </p>
         </div>
         <SortSelect value={params.orderby ?? "date-desc"} />
       </div>
 
-      {/* Category chips */}
+      {/* Department chips */}
       <div className="-mx-1 mt-6 flex gap-2 overflow-x-auto px-1 pb-2">
         <Link
           href="/shop"
@@ -105,15 +123,17 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
         >
           Deals
         </Link>
-        {topCategories.map((category) => (
+        {departments.map((department) => (
           <Link
-            key={category.id}
-            href={`/shop?category=${category.slug}`}
+            key={department.key}
+            href={department.href}
             className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${
-              params.category === category.slug ? "border-ink bg-ink text-white" : "border-line hover:border-ink"
+              matchedDepartment?.key === department.key
+                ? "border-ink bg-ink text-white"
+                : "border-line hover:border-ink"
             }`}
           >
-            {decodeEntities(category.name)}
+            {department.name}
           </Link>
         ))}
       </div>
