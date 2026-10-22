@@ -15,7 +15,7 @@ export async function SiteHeader() {
       <div className="h-1.5" style={{ backgroundColor: BLUE }} />
 
       {/* Main bar */}
-      <div className="container-page flex h-12 items-center gap-2 md:h-14">
+      <div className="container-page grid h-12 grid-cols-[auto_1fr_auto] items-center gap-3 md:h-14">
         {/* Logo */}
         <Link
           href="/"
@@ -27,12 +27,14 @@ export async function SiteHeader() {
         </Link>
 
         {/* Search (desktop) */}
-        <div className="hidden flex-1 md:block md:max-w-lg">
-          <SearchForm />
+        <div className="hidden justify-center md:flex">
+          <div className="w-full max-w-lg">
+            <SearchForm />
+          </div>
         </div>
 
         {/* Right actions */}
-        <div className="ml-auto flex items-center gap-1 md:gap-2">
+        <div className="flex items-center gap-1 md:gap-2">
           <a
             href={WP.account}
             className="hidden size-9 items-center justify-center rounded-full text-ink transition hover:bg-haze sm:flex"
