@@ -144,7 +144,11 @@ export function SearchAutosuggest({ variant = "desktop" }: { variant?: "desktop"
           onKeyDown={onKeyDown}
           placeholder="Search diapers, skincare, toys…"
           autoComplete="off"
-          className="h-11 w-full rounded-full border border-line bg-haze pl-11 pr-32 text-[14px] text-ink placeholder:text-muted/80 focus:border-brand focus:bg-white focus:outline-none"
+          className={`h-11 w-full rounded-full border border-line bg-haze pl-11 text-ink placeholder:text-muted/80 focus:border-brand focus:bg-white focus:outline-none ${
+            variant === "mobile"
+              ? "pr-20 text-[13px]"
+              : "pr-32 text-[14px]"
+          }`}
         />
         <svg
           aria-hidden="true"
