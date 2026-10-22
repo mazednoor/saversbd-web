@@ -45,6 +45,25 @@ function saversbd_revalidate(array $paths): void
 }
 
 /**
+ * "Buy now" support for the headless storefront.
+ *
+ * The Next.js frontend links to
+ *   /?add-to-cart=123&quantity=1&buy_now=1
+ * WooCommerce adds the product, then this filter sends the shopper straight
+ * to checkout instead of the cart page.
+ */
+add_filter(
+	'woocommerce_add_to_cart_redirect',
+	function ( $redirect_url ) {
+		if ( ! empty( $_GET['buy_now'] ) && function_exists( 'wc_get_checkout_url' ) ) {
+			return wc_get_checkout_url();
+		}
+		return $redirect_url;
+	},
+	20
+);
+
+/**
  * Content changes.
  */
 add_action('save_post', function ($post_id, $post) {

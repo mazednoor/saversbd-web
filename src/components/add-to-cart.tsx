@@ -10,14 +10,8 @@ interface AddToCartProps {
   priceLabel: string;
 }
 
-/**
- * The cart lives in WooCommerce, so this hands the shopper over to the
- * WordPress cart with the product and quantity already added. No API keys,
- * no duplicated cart state, payment gateways untouched.
- */
 export function AddToCart({ productId, permalink, inStock, hasOptions, priceLabel }: AddToCartProps) {
   const [quantity, setQuantity] = useState(1);
-  const href = `/api/cart/add?id=${productId}&quantity=${quantity}`;
 
   if (!inStock) {
     return (
@@ -40,6 +34,9 @@ export function AddToCart({ productId, permalink, inStock, hasOptions, priceLabe
       </div>
     );
   }
+
+  const addToCart = `/api/cart/add?id=${productId}&quantity=${quantity}`;
+  const buyNow = `/api/cart/add?id=${productId}&quantity=${quantity}&buy=1`;
 
   return (
     <div className="space-y-3">
@@ -66,12 +63,18 @@ export function AddToCart({ productId, permalink, inStock, hasOptions, priceLabe
             +
           </button>
         </div>
-        <a href={href} className="btn btn-primary h-12 flex-1">
-          Add to cart · {priceLabel}
+
+        <a href={addToCart} className="btn btn-ink h-12 flex-1">
+          Add to cart
         </a>
       </div>
+
+      <a href={buyNow} className="btn btn-primary h-12 w-full">
+        Buy now · {priceLabel}
+      </a>
+
       <p className="text-xs text-muted">
-        You will finish checkout securely on saversbd.com — cash on delivery available.
+        Cart and checkout are handled securely on saversbd.com — cash on delivery available.
       </p>
     </div>
   );
