@@ -9,10 +9,13 @@ import { EmptyState } from "@/components/ui";
 import { absoluteUrl, decodeEntities, excerptFrom } from "@/lib/format";
 import { CATEGORY_ALIASES } from "@/lib/category-aliases";
 import { buildTaxonomy, findPlacement } from "@/lib/taxonomy";
+import { buildBrands, getBrand } from "@/lib/brands";
+import { FilterPanel, type BrandOption, type ShopFilters } from "@/components/filter-panel";
 import {
   getCategoryBySlug,
   getCategories,
   getChildCategories,
+  getAllProducts,
   getProducts,
   type ProductQuery,
   type StoreCategory,
@@ -32,7 +35,15 @@ const SORTS: Record<string, { orderby: ProductQuery["orderby"]; order: ProductQu
 
 type PageProps = {
   params: Promise<{ slug: string[] }>;
-  searchParams: Promise<{ page?: string; orderby?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    orderby?: string;
+    brand?: string;
+    min?: string;
+    max?: string;
+    instock?: string;
+    on_sale?: string;
+  }>;
 };
 
 /** Resolves /product-category/toys and /product-category/toys/0-12m alike. */
@@ -90,11 +101,30 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   const page = Math.max(1, Number(query.page) || 1);
   const sort = SORTS[query.orderby ?? "date-desc"] ?? SORTS["date-desc"];
 
-  const [children, result, allCategories] = await Promise.all([
+  const brandSlug = query.brand ?? "";
+  const brand = brandSlug ? getBrand(brandSlug) : null;
+  const minPrice = query.min ? Number(query.min) : null;
+  const maxPrice = query.max ? Number(query.max) : null;
+  const inStock = query.instock === "1";
+  const onSale = query.on_sale === "1";
+
+  const [children, allCategories, catalogue] = await Promise.all([
     getChildCategories(category.id),
-    getProducts({ page, perPage: PER_PAGE, category: category.id, ...sort }),
     getCategories(),
+    getAllProducts(),
   ]);
+
+  const result = await getProducts({
+    page,
+    perPage: PER_PAGE,
+    category: category.id,
+    search: brand ? brand.matchers[0] : undefined,
+    inStock,
+    onSale,
+    minPrice: minPrice != null ? Math.round(minPrice * 100) : undefined,
+    maxPrice: maxPrice != null ? Math.round(maxPrice * 100) : undefined,
+    ...sort,
+  });
 
   // Where this category sits in the curated department taxonomy.
   const taxonomy = buildTaxonomy(allCategories);
@@ -102,6 +132,30 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   const siblings = placement
     ? placement.group.categories.filter((item) => item.slug !== category.slug)
     : children;
+
+  const brandOptions: BrandOption[] = buildBrands(catalogue).map((item) => ({
+    slug: item.slug,
+    name: item.name,
+    count: item.count,
+  }));
+
+  const filters: ShopFilters = {
+    department: "",
+    group: "",
+    brand: brandSlug,
+    min: query.min ?? "",
+    max: query.max ?? "",
+    instock: inStock,
+    onSale,
+    query: "",
+    orderby: query.orderby ?? "",
+  };
+
+  const activeCount = [brandSlug, query.min, query.max, inStock ? "1" : "", onSale ? "1" : ""].filter(
+    Boolean,
+  ).length;
+
+  const categoryHref = `/product-category/${category.slug}`;
 
   const crumbs = [
     { label: "Shop", href: "/shop" },
@@ -148,27 +202,82 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
         </div>
       ) : null}
 
-      <div className="mt-8">
-        {result.products.length ? (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {result.products.map((product, index) => (
-              <ProductCard key={product.id} product={product} priority={index < 4} />
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            title="Nothing here yet"
-            message="This category has no products on sale right now. In the meantime, browse the full catalogue."
-          />
-        )}
-      </div>
+      <div className="mt-8 grid gap-8 lg:grid-cols-[16rem_1fr]">
+        {/* Filters — sidebar on desktop, collapsible panel on mobile */}
+        <aside className="lg:sticky lg:top-32 lg:self-start">
+          <details className="group rounded-2xl border border-line bg-white p-4 lg:hidden">
+            <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
+              <span>Filters{activeCount > 0 ? ` (${activeCount})` : ""}</span>
+              <svg
+                viewBox="0 0 24 24"
+                className="size-4 text-muted transition group-open:rotate-180"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="m6 9 6 6 6-6" strokeLinecap="round" />
+              </svg>
+            </summary>
+            <div className="mt-4 border-t border-line pt-4">
+              <FilterPanel
+                filters={filters}
+                brands={brandOptions}
+                activeCount={activeCount}
+                action={categoryHref}
+                clearHref={categoryHref}
+                showDepartment={false}
+                showGroups={false}
+              />
+            </div>
+          </details>
 
-      <Pagination
-        currentPage={page}
-        totalPages={result.totalPages}
-        basePath={`/product-category/${slug.join("/")}`}
-        params={{ orderby: query.orderby }}
-      />
+          <div className="hidden rounded-2xl border border-line bg-white p-5 lg:block">
+            <h2 className="mb-4 text-sm font-bold uppercase tracking-[0.12em] text-ink">
+              Filters{activeCount > 0 ? ` (${activeCount})` : ""}
+            </h2>
+            <FilterPanel
+              filters={filters}
+              brands={brandOptions}
+              activeCount={activeCount}
+              action={categoryHref}
+              clearHref={categoryHref}
+              showDepartment={false}
+              showGroups={false}
+            />
+          </div>
+        </aside>
+
+        <div>
+          {result.products.length ? (
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
+              {result.products.map((product, index) => (
+                <ProductCard key={product.id} product={product} priority={index < 4} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="Nothing matches these filters"
+              message="Try a different brand or a wider price range, or browse the rest of the catalogue."
+              actionHref={categoryHref}
+              actionLabel="Clear filters"
+            />
+          )}
+
+          <Pagination
+            currentPage={page}
+            totalPages={result.totalPages}
+            basePath={categoryHref}
+            params={{
+              brand: brandSlug || undefined,
+              min: query.min,
+              max: query.max,
+              instock: inStock ? "1" : undefined,
+              on_sale: onSale ? "1" : undefined,
+              orderby: query.orderby,
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 }

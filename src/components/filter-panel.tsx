@@ -21,76 +21,104 @@ export interface ShopFilters {
 
 interface FilterPanelProps {
   filters: ShopFilters;
-  departments: ResolvedDepartment[];
-  groups: { department: ResolvedDepartment; group: ResolvedGroup }[];
   brands: BrandOption[];
   activeCount: number;
+  /** Where the form submits — the shop page or a category page. */
+  action?: string;
+  /** Where "Clear" points. */
+  clearHref?: string;
+  departments?: ResolvedDepartment[];
+  groups?: { department: ResolvedDepartment; group: ResolvedGroup }[];
+  showDepartment?: boolean;
+  showGroups?: boolean;
 }
 
 /**
  * Server-rendered filter form. It is a plain GET form, so filtering works
  * without JavaScript and every filtered view has a shareable URL.
  */
-export function FilterPanel({ filters, departments, groups, brands, activeCount }: FilterPanelProps) {
+export function FilterPanel({
+  filters,
+  brands,
+  activeCount,
+  action = "/shop",
+  clearHref = "/shop",
+  departments = [],
+  groups = [],
+  showDepartment = true,
+  showGroups = true,
+}: FilterPanelProps) {
   return (
-    <form action="/shop" method="get" className="space-y-6">
+    <form action={action} method="get" className="space-y-6">
       {/* Keep the search term and sort order when filters are applied */}
       {filters.query ? <input type="hidden" name="q" value={filters.query} /> : null}
       {filters.orderby ? <input type="hidden" name="orderby" value={filters.orderby} /> : null}
-      {filters.department ? <input type="hidden" name="department" value={filters.department} /> : null}
-      {filters.onSale ? <input type="hidden" name="on_sale" value="1" /> : null}
 
       {/* Department */}
-      <fieldset>
-        <legend className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-ink">Department</legend>
-        <div className="space-y-1">
-          {departments.map((department) => (
-            <label
-              key={department.key}
-              className="flex cursor-pointer items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-sm text-muted hover:bg-haze"
-            >
-              <span className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="department"
-                  value={department.key}
-                  defaultChecked={filters.department === department.key}
-                  className="size-4 accent-[#2060a0]"
-                />
-                {department.name}
-              </span>
-              <span className="text-xs text-muted/70">{department.count}</span>
+      {showDepartment && departments.length ? (
+        <fieldset>
+          <legend className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-ink">Department</legend>
+          <div className="space-y-1">
+            <label className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-muted hover:bg-haze">
+              <input
+                type="radio"
+                name="department"
+                value=""
+                defaultChecked={!filters.department}
+                className="size-4 accent-[#2060a0]"
+              />
+              All departments
             </label>
-          ))}
-        </div>
-      </fieldset>
+            {departments.map((department) => (
+              <label
+                key={department.key}
+                className="flex cursor-pointer items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-sm text-muted hover:bg-haze"
+              >
+                <span className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="department"
+                    value={department.key}
+                    defaultChecked={filters.department === department.key}
+                    className="size-4 accent-[#2060a0]"
+                  />
+                  {department.name}
+                </span>
+                <span className="text-xs text-muted/70">{department.count}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ) : null}
 
       {/* Sub-category */}
-      <fieldset>
-        <legend className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-ink">Sub-category</legend>
-        <select
-          name="group"
-          defaultValue={filters.group}
-          className="h-10 w-full rounded-lg border border-line bg-white px-3 text-sm text-ink focus:border-ink focus:outline-none"
-        >
-          <option value="">All sub-categories</option>
-          {departments.map((department) => {
-            const departmentGroups = groups.filter(
-              (entry) => entry.department.key === department.key,
-            );
-            if (!departmentGroups.length) return null;
-            return (
-              <optgroup key={department.key} label={department.name}>
-                {departmentGroups.map(({ group }) => (
-                  <option key={`${department.key}-${group.slug}`} value={group.slug}>
-                    {group.name} ({group.count})
-                  </option>
-                ))}
-              </optgroup>
-            );
-          })}
-        </select>
-      </fieldset>
+      {showGroups && groups.length ? (
+        <fieldset>
+          <legend className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-ink">Sub-category</legend>
+          <select
+            name="group"
+            defaultValue={filters.group}
+            className="h-10 w-full rounded-lg border border-line bg-white px-3 text-sm text-ink focus:border-ink focus:outline-none"
+          >
+            <option value="">All sub-categories</option>
+            {departments.map((department) => {
+              const departmentGroups = groups.filter(
+                (entry) => entry.department.key === department.key,
+              );
+              if (!departmentGroups.length) return null;
+              return (
+                <optgroup key={department.key} label={department.name}>
+                  {departmentGroups.map(({ group }) => (
+                    <option key={`${department.key}-${group.slug}`} value={group.slug}>
+                      {group.name} ({group.count})
+                    </option>
+                  ))}
+                </optgroup>
+              );
+            })}
+          </select>
+        </fieldset>
+      ) : null}
 
       {/* Brand */}
       <fieldset>
@@ -169,7 +197,7 @@ export function FilterPanel({ filters, departments, groups, brands, activeCount 
           Apply filters
         </button>
         {activeCount > 0 ? (
-          <Link href="/shop" className="btn btn-outline h-10">
+          <Link href={clearHref} className="btn btn-outline h-10">
             Clear
           </Link>
         ) : null}
