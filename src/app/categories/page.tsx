@@ -13,7 +13,9 @@ export const metadata: Metadata = {
 
 export default async function CategoriesPage() {
   const categories = await getCategories();
-  const active = categories.filter((category) => category.count > 0);
+  const active = categories.filter(
+    (category) => category.count > 0 && category.slug !== "uncategorized",
+  );
   const parents = active.filter((category) => category.parent === 0).sort((a, b) => b.count - a.count);
   const childrenOf = (parentId: number) =>
     active.filter((category) => category.parent === parentId).sort((a, b) => b.count - a.count);

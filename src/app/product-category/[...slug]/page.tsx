@@ -38,6 +38,8 @@ async function resolveCategory(segments: string[]) {
   const slug = segments[segments.length - 1];
   const category = await getCategoryBySlug(slug);
   if (!category) return null;
+  // "Uncategorized" is a WordPress default bucket, not a shoppable department.
+  if (category.slug === "uncategorized") return null;
 
   const categories = await getCategories();
   const byId = new Map(categories.map((item) => [item.id, item]));
