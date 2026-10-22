@@ -12,10 +12,10 @@ export async function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white">
       {/* Blue accent line (matches the reference header) */}
-      <div className="h-2.5" style={{ backgroundColor: BLUE }} />
+      <div className="h-1.5" style={{ backgroundColor: BLUE }} />
 
       {/* Main bar */}
-      <div className="container-page flex h-14 items-center gap-3 md:h-16">
+      <div className="container-page flex h-12 items-center gap-2 md:h-14">
         {/* Logo */}
         <Link
           href="/"
@@ -66,7 +66,7 @@ export async function SiteHeader() {
 
       {/* Menu row (on its own line) */}
       <div className="border-t border-line bg-haze/60">
-        <div className="container-page flex items-center gap-1 overflow-x-auto py-1.5">
+        <div className="container-page flex items-center gap-1 overflow-x-auto py-1">
           <nav aria-label="Primary" className="flex items-center gap-1">
             {/* All Categories dropdown */}
             <details className="group relative">
