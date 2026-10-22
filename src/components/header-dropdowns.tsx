@@ -48,7 +48,7 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 max-h-[70vh] w-72 overflow-y-auto rounded-xl border border-line bg-white p-3 shadow-xl">
+        <div className="absolute left-0 top-full z-50 w-72 rounded-xl border border-line bg-white p-3 shadow-xl">
           <Link
             href="/shop"
             className="mb-1 block rounded-lg px-3 py-2 text-sm font-semibold"
@@ -81,17 +81,23 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
                   </span>
                 </Link>
                 {children.length > 0 && flyout === category.id && (
-                  <div className="mb-1 ml-2 border-l-2 border-line pl-2">
-                    {children.map((child) => (
-                      <Link
-                        key={child.id}
-                        href={`/product-category/${child.slug}`}
-                        className="flex items-center justify-between rounded-lg px-3 py-1.5 text-sm text-muted hover:bg-haze hover:text-ink"
-                      >
-                        <span>{decodeEntities(child.name)}</span>
-                        <span className="text-xs text-muted/70">{child.count}</span>
-                      </Link>
-                    ))}
+                  /* Offset wrapper: the transparent margin/ padding keeps the
+                     pointer "inside" the row, so the flyout does not close
+                     while the cursor travels across the gap — and it does
+                     not overlap the parent panel. */
+                  <div className="absolute left-full top-0 z-50 pl-3">
+                    <div className="w-56 rounded-xl border border-line bg-white p-3 shadow-xl">
+                      {children.map((child) => (
+                        <Link
+                          key={child.id}
+                          href={`/product-category/${child.slug}`}
+                          className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-ink hover:bg-haze"
+                        >
+                          <span>{decodeEntities(child.name)}</span>
+                          <span className="text-xs text-muted">{child.count}</span>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
