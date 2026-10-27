@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { buildTaxonomy, categoryHref } from "@/lib/taxonomy";
 import { decodeEntities } from "@/lib/format";
@@ -16,22 +16,71 @@ interface AllCategoriesDropdownProps {
 export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps) {
   const [open, setOpen] = useState(false);
   const [department, setDepartment] = useState<string | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pinned = useRef(false);
+
+  const cancelClose = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = null;
+  };
+  const close = () => {
+    cancelClose();
+    pinned.current = false;
+    setOpen(false);
+    setDepartment(null);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) close();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        close();
+        buttonRef.current?.focus();
+      }
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  useEffect(() => () => cancelClose(), []);
 
   const departments = buildTaxonomy(categories);
   const active = departments.find((item) => item.key === department) ?? null;
 
   return (
     <div
+      ref={rootRef}
       className="relative"
-      onMouseEnter={() => setOpen(true)}
+      onMouseEnter={() => { cancelClose(); setOpen(true); }}
       onMouseLeave={() => {
-        setOpen(false);
-        setDepartment(null);
+        cancelClose();
+        closeTimer.current = setTimeout(() => {
+          if (!pinned.current && !rootRef.current?.contains(document.activeElement)) close();
+        }, 250);
+      }}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) close();
       }}
     >
       <button
+        ref={buttonRef}
         type="button"
-        className="flex cursor-default items-center gap-1.5 rounded px-3 py-2 text-sm font-semibold text-white"
+        onClick={() => {
+          if (pinned.current) close();
+          else { cancelClose(); pinned.current = true; setOpen(true); }
+        }}
+        aria-expanded={open}
+        aria-controls="all-categories-menu"
+        className="flex cursor-pointer items-center gap-1.5 rounded px-3 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
         style={{ backgroundColor: BLUE }}
       >
         All Categories
@@ -41,9 +90,10 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 w-64 rounded-xl border border-line bg-white p-3 shadow-xl">
+        <div id="all-categories-menu" className="absolute left-0 top-full z-50 w-64 rounded-xl border border-line bg-white p-3 shadow-xl">
           <Link
             href="/categories"
+            onClick={close}
             className="mb-1 block rounded-lg px-3 py-2.5 text-[15px] font-semibold"
             style={{ color: BLUE }}
           >
@@ -56,10 +106,12 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
               key={item.key}
               className="group/sub relative"
               onMouseEnter={() => setDepartment(item.key)}
+              onFocus={() => setDepartment(item.key)}
             >
               <Link
                 href={item.landingHref}
-                className="flex items-center justify-between rounded-lg px-3 py-2.5 text-[15px] font-semibold text-ink hover:bg-haze"
+                onClick={close}
+                className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-[15px] font-semibold text-ink hover:bg-haze focus-visible:outline-2 focus-visible:outline-blue-600 ${active?.key === item.key ? "bg-haze" : ""}`}
               >
                 <span>{item.name}</span>
                 <span className="flex items-center gap-1 text-xs text-muted">
@@ -86,7 +138,8 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
                             <Link
                               key={category.id}
                               href={categoryHref(category.slug)}
-                              className="flex items-center justify-between gap-2 rounded-lg px-2 py-2 text-[15px] text-ink hover:bg-haze"
+                              onClick={close}
+                              className="flex items-center justify-between gap-2 rounded-lg px-2 py-2 text-[15px] text-ink hover:bg-haze focus-visible:outline-2 focus-visible:outline-blue-600"
                             >
                               <span className="truncate">{decodeEntities(category.name)}</span>
                               <span className="text-xs text-muted">{category.count}</span>
