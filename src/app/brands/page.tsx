@@ -42,14 +42,6 @@ export default async function BrandsPage() {
           </Link>
         ))}
       </div>
-      <p className="mt-8 text-xs leading-relaxed text-muted">
-        Logo sources: {brands.filter((brand) => BRAND_LOGOS[brand.slug]).map((brand, index) => (
-          <span key={brand.slug}>
-            {index > 0 ? ", " : ""}
-            <a href={BRAND_LOGOS[brand.slug].source} target="_blank" rel="noreferrer" className="underline hover:text-ink">{brand.name}</a>
-          </span>
-        ))}. Other brands are shown as text while their logos are being sourced.
-      </p>
     </div>
   );
 }
