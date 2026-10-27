@@ -133,13 +133,13 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
                         <p className="mb-2 px-1 text-[11px] font-bold uppercase tracking-[0.14em] text-muted">
                           {group.name}
                         </p>
-                        <div className="grid grid-cols-2 gap-x-3">
+                        <div className="grid grid-cols-2 gap-x-2">
                           {group.categories.map((category) => (
                             <Link
                               key={category.id}
                               href={categoryHref(category.slug)}
                               onClick={close}
-                              className="flex items-center justify-between gap-2 rounded-lg px-2 py-2 text-[15px] text-ink hover:bg-haze focus-visible:outline-2 focus-visible:outline-blue-600"
+                              className="flex min-h-9 items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-[15px] text-ink hover:bg-haze focus-visible:outline-2 focus-visible:outline-blue-600"
                             >
                               <span className="truncate">{decodeEntities(category.name)}</span>
                               <span className="text-xs text-muted">{category.count}</span>

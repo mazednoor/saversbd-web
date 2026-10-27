@@ -114,7 +114,7 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                           key={department.key}
                           type="button"
                           onClick={() => setSelectedDept(department.key)}
-                          className="w-full flex items-center justify-between rounded-lg px-2 py-2 text-[14px] font-semibold text-ink hover:bg-haze"
+                          className="flex min-h-11 w-full items-center justify-between rounded-lg px-2 py-2 text-[14px] font-semibold text-ink hover:bg-haze"
                         >
                           <span>{department.name}</span>
                           <svg viewBox="0 0 24 24" className="size-4 text-muted" fill="none" stroke="currentColor" strokeWidth="2">
@@ -138,7 +138,7 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                       <button
                         type="button"
                         onClick={() => setSelectedDept(null)}
-                        className="w-full flex items-center gap-2 rounded-lg px-2 py-2 text-[14px] font-semibold text-brand hover:bg-brand-soft"
+                        className="flex min-h-11 w-full items-center gap-2 rounded-lg px-2 py-2 text-[14px] font-semibold text-brand hover:bg-brand-soft"
                       >
                         <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="m15 18-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
@@ -151,14 +151,14 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                             <Link
                               href={department.landingHref}
                               onClick={close}
-                              className="block rounded-lg px-2 py-1.5 text-[14px] font-semibold text-ink hover:bg-haze"
+                              className="flex min-h-11 items-center rounded-lg px-2 py-2 text-[14px] font-semibold text-ink hover:bg-haze"
                             >
                               View all {department.name} →
                             </Link>
-                            <div className="ml-2 mt-1 space-y-1">
+                            <div className="ml-2 mt-2 space-y-3">
                               {department.groups.map((group) => (
                                 <div key={group.name}>
-                                  <p className="px-1 pb-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
+                                  <p className="px-2 pb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
                                     {group.name}
                                   </p>
                                   {group.categories.map((category) => (
@@ -166,7 +166,7 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                                       key={category.id}
                                       href={categoryHref(category.slug)}
                                       onClick={close}
-                                      className="block rounded-lg px-2 py-1.5 text-[14px] text-muted hover:bg-haze hover:text-ink"
+                                      className="flex min-h-11 items-center rounded-lg px-2 py-2 text-[14px] text-muted hover:bg-haze hover:text-ink"
                                     >
                                       {decodeEntities(category.name)}
                                     </Link>
