@@ -1,5 +1,11 @@
-/** Verified brand logos from Wikimedia Commons. Missing brands use a text fallback. */
+/** Brand logos from official sites and Wikimedia Commons. Missing brands use a text fallback. */
 export const BRAND_LOGOS: Record<string, { url: string; source: string }> = {
+  "galaxy": { url: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Galaxy_chocolate_brand_logo.png", source: "https://commons.wikimedia.org/wiki/File:Galaxy_chocolate_brand_logo.png" },
+  "mamaearth": { url: "https://mamaearth.in/cdn/shop/files/Logo.png?v=1772919457&width=328", source: "https://mamaearth.in/" },
+  "kinder": { url: "https://www.kinder.com/us/brands/kinder/themes/custom/kinder_theme/logo.svg", source: "https://www.kinder.com/us/en/" },
+  "herbal-essences": { url: "https://herbalessences.com/static/images/main-logo.png", source: "https://herbalessences.com/" },
+  "elizabeth-arden": { url: "https://www.elizabetharden.com/cdn/shop/files/Elizabeth_Arden_Logo_2025.svg?v=1737047469&width=320", source: "https://www.elizabetharden.com/" },
+  "merci": { url: "https://www.merci.com/r1788513931/frontend/dist/images/generell/header/merci-logo-2x.png", source: "https://www.merci.com/" },
   "cavendish-harvey": { url: "https://cavendish-harvey.de/en/wp-content/themes/cavendish-harvey/img/logo.png", source: "https://cavendish-harvey.de/en/" },
   "molfix": { url: "https://www.molfix.com/dist/media/img/logo.png", source: "https://www.molfix.com/" },
   "gerber": { url: "https://www.gerber.com/media/logo/stores/1/Gerber_Logo_G_164x171.png", source: "https://www.gerber.com/" },
@@ -16,7 +22,7 @@ export const BRAND_LOGOS: Record<string, { url: string; source: string }> = {
   "samyang": { url: "https://upload.wikimedia.org/wikipedia/commons/5/50/Samyang_Foods_Logo.svg", source: "https://commons.wikimedia.org/wiki/File:Samyang_Foods_Logo.svg" },
   "kelloggs": { url: "https://upload.wikimedia.org/wikipedia/commons/0/0a/Kellogg%27s-Logo.svg", source: "https://commons.wikimedia.org/wiki/File:Kellogg's-Logo.svg" },
   "heinz": { url: "https://upload.wikimedia.org/wikipedia/commons/0/04/Heinz-logo.svg", source: "https://commons.wikimedia.org/wiki/File:Heinz-logo.svg" },
-  "dove": { url: "https://upload.wikimedia.org/wikipedia/commons/1/10/Dove-logo-2012.png", source: "https://commons.wikimedia.org/wiki/File:Dove-logo-2012.png" },
+  "dove": { url: "https://upload.wikimedia.org/wikipedia/commons/e/ee/Dove_wordmark.svg", source: "https://commons.wikimedia.org/wiki/File:Dove_wordmark.svg" },
   "garnier": { url: "https://upload.wikimedia.org/wikipedia/commons/d/df/Garnier_wordmark.svg", source: "https://commons.wikimedia.org/wiki/File:Garnier_wordmark.svg" },
   "pringles": { url: "https://upload.wikimedia.org/wikipedia/commons/3/33/Pringles_logo.png", source: "https://commons.wikimedia.org/wiki/File:Pringles_logo.png" },
   "paco-rabanne": { url: "https://upload.wikimedia.org/wikipedia/commons/8/8e/Paco_Rabanne_logo.svg", source: "https://commons.wikimedia.org/wiki/File:Paco_Rabanne_logo.svg" },
