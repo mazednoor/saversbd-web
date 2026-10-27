@@ -130,7 +130,7 @@ export function AllCategoriesDropdown({ categories }: AllCategoriesDropdownProps
                   <div className="max-h-[70vh] w-[30rem] overflow-y-auto rounded-r-xl border-y border-r border-line bg-white p-4 shadow-[10px_0_20px_-12px_rgba(4,0,55,0.45)]">
                     {item.groups.map((group) => (
                       <div key={group.name} className="mb-4 last:mb-0">
-                        <p className="mb-2 px-1 text-[11px] font-bold uppercase tracking-[0.14em] text-muted">
+                        <p className="mb-2 px-1 text-[13px] font-bold uppercase tracking-[0.08em] text-ink">
                           {group.name}
                         </p>
                         <div className="grid grid-cols-2 gap-x-2">

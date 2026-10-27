@@ -158,7 +158,7 @@ export function MobileMenu({ categories }: { categories: StoreCategory[] }) {
                             <div className="ml-2 mt-2 space-y-3">
                               {department.groups.map((group) => (
                                 <div key={group.name}>
-                                  <p className="px-2 pb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
+                                  <p className="px-2 pb-1 text-[13px] font-bold uppercase tracking-[0.08em] text-ink">
                                     {group.name}
                                   </p>
                                   {group.categories.map((category) => (
