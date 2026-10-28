@@ -17,7 +17,8 @@ import {
 } from "@/lib/format";
 import { categoryHref } from "@/lib/taxonomy";
 import { prepareContent } from "@/lib/html";
-import { getProductBySlug, getRelatedProducts } from "@/lib/woo";
+import { getProductBySlug, getProductVariations, getRelatedProducts } from "@/lib/woo";
+import { WP_URL } from "@/lib/site";
 
 export const revalidate = 600;
 
@@ -51,7 +52,12 @@ export default async function ProductPage({ params }: PageProps) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const related = await getRelatedProducts(product);
+  const [related, variations] = await Promise.all([
+    getRelatedProducts(product),
+    product.type === "variable" ? getProductVariations(product.id) : Promise.resolve([]),
+  ]);
+  const storeProductUrl = new URL(product.permalink);
+  const backendProductUrl = new URL(storeProductUrl.pathname + storeProductUrl.search, WP_URL).toString();
   const name = decodeEntities(product.name);
   const description = prepareContent(product.description || product.short_description);
   const shortDescription = prepareContent(product.short_description);
@@ -111,7 +117,7 @@ export default async function ProductPage({ params }: PageProps) {
           {product.sku ? <p className="mt-2 text-xs text-muted">SKU: {product.sku}</p> : null}
 
           <div className="mt-5 flex flex-wrap items-end gap-3">
-            <span className="text-[30px] font-bold leading-none text-ink">{price}</span>
+            <span className="text-[30px] font-bold leading-none text-ink">{product.type === "variable" ? "From " : ""}{price}</span>
             {discount ? (
               <>
                 <span className="text-base text-muted line-through">
@@ -149,10 +155,11 @@ export default async function ProductPage({ params }: PageProps) {
             ) : (
               <AddToCart
                 productId={product.id}
-                permalink={product.permalink}
+                permalink={backendProductUrl}
                 inStock={product.is_in_stock}
                 hasOptions={product.has_options}
                 priceLabel={price}
+                variations={variations}
               />
             )}
           </div>

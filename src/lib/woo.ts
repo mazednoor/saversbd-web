@@ -60,6 +60,44 @@ export interface StoreProduct {
   has_options: boolean;
   stock_availability?: { text: string; class: string };
   low_stock_remaining: number | null;
+  variation?: string;
+  variations?: { id: number; attributes: { name: string; value: string }[] }[];
+}
+
+export interface ProductVariationChoice {
+  id: number;
+  label: string;
+  prices: StorePrice;
+  inStock: boolean;
+  purchasable: boolean;
+  attributes: Record<string, string>;
+}
+
+/** No credentials: published variation data comes from the public Store API. */
+export async function getProductVariations(parentId: number, fresh = false): Promise<ProductVariationChoice[]> {
+  try {
+    const result: ProductVariationChoice[] = [];
+    for (let page = 1; page <= 20; page++) {
+      const { data, headers, ok } = await storeFetch(
+        `/products?type=variation&parent=${parentId}&per_page=100&page=${page}`,
+        fresh ? 0 : 60,
+      );
+      if (!ok || !Array.isArray(data)) return [];
+      for (const item of data as StoreProduct[]) {
+        if (item.parent !== parentId || item.type !== "variation") continue;
+        const params = new URL(item.permalink).searchParams;
+        const attributes = Object.fromEntries([...params].filter(([key]) => key.startsWith("attribute_")));
+        // Wildcard variations need additional customer choices: keep the native form as fallback.
+        if (!Object.keys(attributes).length || Object.values(attributes).some((value) => !value)) return [];
+        result.push({ id: item.id, label: item.variation || Object.values(attributes).join(" / "),
+          prices: item.prices, inStock: item.is_in_stock, purchasable: item.is_purchasable, attributes });
+      }
+      if (page >= Number(headers.get("x-wp-totalpages") ?? 1)) return result;
+    }
+    return []; // Never expose an incomplete selector.
+  } catch {
+    return [];
+  }
 }
 
 export interface ProductQuery {
