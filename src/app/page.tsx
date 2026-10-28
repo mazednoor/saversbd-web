@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
+import { BrandCard } from "@/components/brand-card";
 import { SectionHeading } from "@/components/ui";
 import { decodeEntities } from "@/lib/format";
 import { catchyTitle } from "@/lib/catchy";
@@ -209,27 +210,7 @@ export default async function HomePage() {
               href="/brands"
             />
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-              {brands.map((brand) => (
-                <Link
-                  key={brand.slug}
-                  href={`/brand/${brand.slug}`}
-                  className="group flex flex-col items-center gap-2 rounded-2xl border border-line bg-white p-4 text-center transition hover:-translate-y-0.5 hover:shadow-[0_14px_40px_-28px_rgba(4,0,55,0.5)]"
-                >
-                  <span className="relative size-20 overflow-hidden rounded-full bg-haze">
-                    {brand.image ? (
-                      <Image
-                        src={brand.image}
-                        alt={brand.name}
-                        fill
-                        sizes="80px"
-                        className="object-contain p-2 transition duration-300 group-hover:scale-105"
-                      />
-                    ) : null}
-                  </span>
-                  <span className="text-sm font-semibold leading-tight text-ink">{brand.name}</span>
-                  <span className="text-[13px] text-muted">{brand.count} products</span>
-                </Link>
-              ))}
+              {brands.map((brand) => <BrandCard key={brand.slug} brand={brand} />)}
             </div>
           </div>
         </section>
