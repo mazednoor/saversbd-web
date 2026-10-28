@@ -37,8 +37,6 @@ export default async function WordPressPage({ params }: PageProps) {
   // Transactional pages stay in WooCommerce — send visitors to the real thing
   // instead of rendering an empty page.
   const handOff: Record<string, string> = {
-    cart: WP.cart,
-    checkout: WP.checkout,
     "my-account": WP.account,
   };
   if (slug.length === 1 && handOff[slug[0]]) {

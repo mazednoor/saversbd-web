@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
 
   images: {
     remotePatterns: [
+      { protocol: "https", hostname: "saversbd.com" },
       {
         protocol: wpUrl.protocol.replace(":", "") as "http" | "https",
         hostname: wpUrl.hostname,
@@ -26,6 +27,10 @@ const nextConfig: NextConfig = {
     // If your host enables hotlink protection and product images 403,
     // set NEXT_PUBLIC_UNOPTIMIZED_IMAGES=1 to bypass the optimizer.
     unoptimized: process.env.NEXT_PUBLIC_UNOPTIMIZED_IMAGES === "1",
+  },
+
+  async rewrites() {
+    return [{ source: "/wp-content/uploads/:path*", destination: `${wpUrl.origin}/wp-content/uploads/:path*` }];
   },
 
   async headers() {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMobileMenu } from "./mobile-menu-context";
 import { WP } from "@/lib/site";
+import { CartCount } from "./cart-count";
 
 const BLUE = "#2060a0";
 
@@ -86,10 +87,11 @@ export function MobileBottomBar() {
           const content = (
             <>
               <span
-                className="grid place-items-center"
+                className="relative grid place-items-center"
                 style={{ color: isActive ? BLUE : "currentColor" }}
               >
                 {item.icon}
+                {item.label === "Cart" && <span className="absolute -right-3 -top-1"><CartCount /></span>}
               </span>
               <span
                 className="text-[10px] font-medium leading-none"
