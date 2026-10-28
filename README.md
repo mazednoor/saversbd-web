@@ -1,15 +1,10 @@
 # SaversBD — Next.js frontend on a WordPress + WooCommerce backend
 
-A production-ready headless setup for **saversbd.com**: WordPress stays the CMS and the store,
-Next.js renders the public storefront. No plugins required on WordPress, no API keys needed for
-reading data (the Store API is public), and cart/checkout/payments keep running inside WooCommerce.
-
-```
-Browser ──▶ Next.js 16 (App Router, ISR) ──▶ WordPress REST API  /wp/v2/*
-                                        └─▶ WooCommerce Store API /wc/store/v1/*
-                                                     │
-Cart / checkout / my-account ────────────────────────┘  (native WooCommerce pages)
-```
+WordPress remains the CMS and order system for **saversbd.com**. Next.js renders
+the storefront, cart and guest checkout. The frontend server connects to the
+public WooCommerce Store API; API keys and a custom WordPress plugin are not required.
+Customers place cash-on-delivery orders on the frontend while WooCommerce calculates
+prices, discounts, stock, delivery rates and taxes.
 
 ## What runs where
 
@@ -18,12 +13,10 @@ Cart / checkout / my-account ─────────────────
 | Home, shop, categories, search, product pages | Next.js | Server-rendered, cached with ISR |
 | Blog + WordPress pages (FAQ, Contact …) | Next.js | Content authored in WP, rendered here |
 | Product data, prices, stock, images | WooCommerce Store API | Public, no auth |
-| Cart, checkout, coupons, shipping, COD | WooCommerce | "Add to cart" hands off to WP |
-| Customer accounts, orders, emails | WooCommerce | Untouched |
-| Payments / gateways | WooCommerce | Untouched |
-
-This is why checkout was left in WordPress: rebuilding the cart and COD flow would mean
-re-testing every gateway, shipping rule and tax setting for no customer-visible gain.
+| Cart, checkout, coupons, shipping, COD | Next.js UI + WooCommerce Store API | Customer stays on saversbd.com |
+| Order creation, stock changes, emails | WooCommerce | Existing WooCommerce rules and notifications |
+| Customer accounts | WordPress | Separate native account page; checkout is guest checkout |
+| Online payment gateways | WordPress | Not exposed by this COD-only frontend integration |
 
 ## Routes
 
@@ -37,8 +30,12 @@ re-testing every gateway, shipping rule and tax setting for no customer-visible 
 | `/search?q=` | Product search + matching articles (`noindex`) |
 | `/blog`, `/blog/[slug]` | WordPress posts |
 | `/[page]` | Any WordPress page (e.g. `/faq`, `/contact`, `/shop-by-department`) |
-| `/cart`, `/checkout`, `/my-account` | 308 → WooCommerce |
-| `/api/cart/add?id=…&quantity=…` | Adds to the WooCommerce cart, then redirects to it |
+| `/cart`, `/checkout` | Next.js cart and guest COD checkout |
+| `/order-confirmation` | Last order from this browser's encrypted receipt |
+| `/my-account` | Redirects to WordPress account management |
+| `/api/commerce/cart` | Private GET cart / same-origin POST cart actions |
+| `/api/commerce/checkout` | Private order status / prepare / submit |
+| `/api/cart/add?id=…&quantity=…` | Legacy links redirect to cart without mutating it |
 | `/api/revalidate` | POST, called by WordPress after saving content |
 | `/sitemap.xml`, `/robots.txt` | Generated from products, categories, posts, pages |
 
@@ -58,6 +55,7 @@ npm run dev                    # http://localhost:3000
 | --- | --- | --- |
 | `WORDPRESS_URL` | yes | Backend origin, e.g. `https://saversbd.com` (or `https://cms.saversbd.com`) |
 | `NEXT_PUBLIC_SITE_URL` | yes | Public origin of this frontend — canonical URLs + sitemap |
+| `COMMERCE_SESSION_SECRET` | yes for shopping | Stable random server-only secret of at least 32 characters; encrypts session and receipt cookies |
 | `NEXT_PUBLIC_REVALIDATE` | no | ISR seconds (default `600`) |
 | `NEXT_PUBLIC_HERO_IMAGE` | no | Absolute URL for the homepage hero photo |
 | `NEXT_PUBLIC_UNOPTIMIZED_IMAGES` | no | Set `1` only if the WP host blocks the image optimizer |
@@ -93,9 +91,10 @@ npm run dev                    # http://localhost:3000
    Both are safe by default (dry run) and never delete products — they move them.
    Old category URLs keep working: the frontend 308-redirects merged slugs to their new home
    (`src/lib/category-aliases.ts`).
-4. **LiteSpeed Cache**: exclude the Store API from *page* caching only if you notice stale stock
-   (`/wp-json/wc/store/v1/cart*`). The read-only product endpoints are safe to cache.
-5. **Recommended domain layout** (best for SEO):
+5. **LiteSpeed Cache**: never page-cache `/wp-json/wc/store/v1/cart*`,
+   `/wp-json/wc/store/v1/checkout*` or `/wp-json/wc/store/v1/order/*`.
+   Read-only product endpoints can be cached with an appropriate stock refresh policy.
+6. **Recommended domain layout**:
    - `saversbd.com` → Next.js
    - `cms.saversbd.com` (or `wp.saversbd.com`) → WordPress admin + APIs
    - Set `WORDPRESS_URL=https://cms.saversbd.com`
@@ -105,6 +104,57 @@ npm run dev                    # http://localhost:3000
    apex domain to it, or run Next.js in front of WP with a reverse proxy.
 
 ## Deploying
+
+### Cart and checkout requirements
+
+- Set `WORDPRESS_URL=https://cms.saversbd.com` and
+  `NEXT_PUBLIC_SITE_URL=https://saversbd.com` at build time **and** runtime.
+- Generate `COMMERCE_SESSION_SECRET` with `openssl rand -hex 32` and set it only
+  in the Node service environment. Keep it stable across releases. Rotating it
+  expires frontend carts and receipts. Do not commit it or prefix it with `NEXT_PUBLIC_`.
+- The runtime must reach the Store API with `Cart-Token` headers on GET and POST.
+  Do not disable WooCommerce nonce validation: cart tokens are the supported
+  headless authentication method. No admin password is needed.
+- The guest checkout currently serves Bangladesh and COD. Configure WooCommerce
+  shipping zones, methods and COD eligibility there. Never hardcode delivery fees
+  in the frontend. Unknown gateway integrations and custom checkout extensions
+  need their own implementation and tests before being enabled.
+- Variable products with explicit published attribute combinations are supported.
+  If options cannot be loaded or represented safely (for example wildcard
+  variations), purchasing is blocked with a retry/contact message. Do not create
+  an arbitrary variation or silently redirect into a different cart session.
+- Frontend carts use an encrypted HttpOnly host-only cookie. Existing native CMS
+  carts and WordPress logins are not automatically imported into this guest session.
+- The service serializes mutations per cart within one Node process. This matches
+  the current single-process VPS deployment; use a distributed lock before scaling
+  commerce across processes/replicas. Prepared WooCommerce order IDs and receipts
+  also protect against submitting the same completed order after a lost response.
+- Private APIs return `Cache-Control: private, no-store`. Keep Cloudflare and any
+  reverse proxy from overriding this for `/api/commerce/*`. Never log Cart-Token,
+  session/receipt cookies, billing emails or order keys.
+- Keep a rollback copy of the currently serving build and systemd unit. Install,
+  build, copy static assets and set cache permissions in a separate release folder;
+  test on a localhost port before switching the service path.
+
+### Verify shopping
+
+`npm run test:commerce` starts a local WooCommerce fixture and Next.js development
+server. It tests two-customer session isolation, encrypted cookies, CSRF rejection,
+variation attributes, quantity/coupon/shipping updates, total confirmation,
+order receipts, duplicate submissions, and a lost order response. It never creates
+a real order or sends email. `COMMERCE_TEST_PORT` overrides the test port (3215).
+To test an existing production build, set `COMMERCE_TEST_PRODUCTION=1` and set
+`COMMERCE_TEST_ORIGIN` to the `NEXT_PUBLIC_SITE_URL` used for that build.
+
+After deploying, use an incognito browser on desktop and mobile to add a simple
+and variable product, refresh the cart, change quantity, remove an item, apply a
+valid/invalid coupon, update a Bangladesh address, select a delivery method, and
+verify the total. Finally place **one deliberately marked test COD order** and
+confirm it in WooCommerce before opening the new checkout to customers. Verify
+that refreshing the confirmation page or double-clicking does not create another
+order. Confirm delivery rules, plugin checkout-field requirements and stock
+changes with the real WordPress installation. Do not use a real payment gateway
+for this acceptance test.
 
 The app is a normal Node 20.9+ server. Three tested paths:
 

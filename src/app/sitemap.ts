@@ -68,7 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
-  const pages = (await getAllPages()).map((page) => {
+  const pages = (await getAllPages()).filter((page) => !/^\/(cart|checkout|my-account|order-confirmation)(\/|$)/.test(new URL(page.link).pathname)).map((page) => {
     const path = new URL(page.link).pathname.replace(/\/+$/, "");
     return {
       url: `${SITE_URL}${path}`,

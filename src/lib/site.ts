@@ -19,16 +19,13 @@ export const SITE = {
   currency: "BDT",
 } as const;
 
-/** Deep links back to WooCommerce for anything transactional. */
+/** Shopping stays on this frontend; account management remains in WordPress. */
 export const WP = {
   shop: `${WP_URL}/shop/`,
-  cart: `${WP_URL}/cart/`,
-  checkout: `${WP_URL}/checkout/`,
+  cart: "/cart",
+  checkout: "/checkout",
   account: `${WP_URL}/my-account/`,
   search: (query: string) => `${WP_URL}/?s=${encodeURIComponent(query)}&post_type=product`,
-  /** Native WooCommerce add-to-cart URL — works without JavaScript. */
-  addToCart: (id: number, quantity = 1) =>
-    `${WP_URL}/?add-to-cart=${id}${quantity > 1 ? `&quantity=${quantity}` : ""}`,
   product: (permalink: string) => permalink,
 };
 

@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { cartAction } from "@/lib/commerce-client";
 import { decodeEntities, formatMoney } from "@/lib/format";
 import type { ProductVariationChoice } from "@/lib/woo";
 
@@ -16,8 +19,22 @@ interface AddToCartProps {
 export function AddToCart({ productId, permalink, inStock, hasOptions, priceLabel, variations = [] }: AddToCartProps) {
   const [quantity, setQuantity] = useState(1);
   const [variationId, setVariationId] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const lock = useRef(false);
+  const router = useRouter();
   const selected = variations.find((variation) => String(variation.id) === variationId);
   const canBuy = !hasOptions || Boolean(selected?.inStock && selected.purchasable);
+
+  async function purchase(buyNow: boolean) {
+    if (!canBuy || lock.current) return;
+    lock.current = true; setBusy(true); setError("");
+    try {
+      await cartAction("add-item", { id: productId, quantity, ...(selected ? { variation: selected.id } : {}) });
+      router.push(buyNow ? "/checkout" : "/cart");
+    } catch (e) { setError(e instanceof Error ? e.message : "Unable to add this item. Check your cart before trying again."); }
+    finally { lock.current = false; setBusy(false); }
+  }
 
   if (!inStock) {
     return (
@@ -32,17 +49,13 @@ export function AddToCart({ productId, permalink, inStock, hasOptions, priceLabe
 
   if (hasOptions && !variations.length) {
     return (
-      <div className="space-y-2">
-        <a href={permalink} className="btn btn-primary w-full">
-          Choose options in store
-        </a>
-        <p className="text-xs text-muted">This product has variants — pick them in the store, then check out.</p>
+      <div className="space-y-3 rounded-2xl border border-line bg-haze p-4" role="status">
+        <p className="text-sm text-muted">Options for this product are temporarily unavailable. Reload the options or contact us for help.</p>
+        <button type="button" onClick={() => router.refresh()} className="btn btn-ink w-full">Reload options</button>
+        <Link href="/contact" className="inline-block text-sm text-brand underline">Ask about this product</Link>
       </div>
     );
   }
-
-  const addToCart = `/api/cart/add?id=${productId}&quantity=${quantity}${selected ? `&variation=${selected.id}` : ""}`;
-  const buyNow = `${addToCart}&buy=1`;
 
   return (
     <div className="space-y-3">
@@ -53,7 +66,7 @@ export function AddToCart({ productId, permalink, inStock, hasOptions, priceLabe
           </label>
           <select id={`variation-${productId}`} value={variationId}
             onChange={(event) => { setVariationId(event.target.value); setQuantity(1); }}
-            className="h-12 w-full rounded-xl border border-line bg-white px-3 text-base text-ink focus:outline-brand"
+            disabled={busy} className="h-12 w-full rounded-xl border border-line bg-white px-3 text-base text-ink focus:outline-brand"
             aria-describedby={`variation-status-${productId}`}>
             <option value="">Select an option</option>
             {variations.map((variation) => (
@@ -74,7 +87,7 @@ export function AddToCart({ productId, permalink, inStock, hasOptions, priceLabe
           type="button"
           onClick={() => setQuantity((q) => Math.max(1, q - 1))}
           className="grid size-11 place-items-center rounded-full text-lg text-muted hover:text-ink disabled:opacity-40"
-          disabled={quantity <= 1}
+          disabled={busy || quantity <= 1}
           aria-label="Decrease quantity"
         >
           −
@@ -87,21 +100,23 @@ export function AddToCart({ productId, permalink, inStock, hasOptions, priceLabe
           onClick={() => setQuantity((q) => Math.min(20, q + 1))}
           className="grid size-11 place-items-center rounded-full text-lg text-muted hover:text-ink"
           aria-label="Increase quantity"
+          disabled={busy || quantity >= 20}
         >
           +
         </button>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        {canBuy ? <><a href={addToCart} className="btn btn-ink h-12 w-full">
-          Add to Cart
-        </a>
-        <a href={buyNow} className="btn btn-primary h-12 w-full">
+        {canBuy ? <><button type="button" disabled={busy} onClick={() => void purchase(false)} className="btn btn-ink h-12 w-full disabled:opacity-40">
+          {busy ? "Adding…" : "Add to Cart"}
+        </button>
+        <button type="button" disabled={busy} onClick={() => void purchase(true)} className="btn btn-primary h-12 w-full disabled:opacity-40">
           Buy Now
-        </a></>
+        </button></>
         : <><button type="button" disabled className="btn btn-ink h-12 w-full opacity-40">Add to Cart</button>
           <button type="button" disabled className="btn btn-primary h-12 w-full opacity-40">Buy Now</button></>}
       </div>
+      {error && <p role="alert" className="text-sm text-red-700">{error} <Link href="/cart" className="underline">View cart</Link></p>}
 
       <p className="text-xs text-muted">
         Continue to our secure checkout — cash on delivery available.

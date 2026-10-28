@@ -5,6 +5,7 @@ import { getCategories } from "@/lib/woo";
 import { AllCategoriesDropdown, EServicesDropdown } from "./header-dropdowns";
 import { CloseDetailsOnOutsideClick } from "./close-details-on-outside-click";
 import { WP } from "@/lib/site";
+import { CartCount } from "./cart-count";
 
 const BLUE = "#2060a0";
 
@@ -70,6 +71,7 @@ export async function SiteHeader() {
               <circle cx="18" cy="20" r="1.3" />
             </svg>
             <span className="hidden sm:inline">Cart</span>
+            <CartCount />
           </a>
         </div>
       </div>
